@@ -8,7 +8,7 @@ import { RawJob } from '../crawler-job.interface';
 import { optionalLocator } from '../utils/crawler.utils';
 import { asyncFilter } from '../../common/core.utils';
 import config from '../config/web3-career.config.json';
-import { JOB_TITLE_TRANSFORMER } from '@libs/nestjs-libraries/crawler/utils/web3-career.utils';
+import { JOB_TITLE_TRANSFORMER } from '../utils/web3-career.utils';
 
 @Injectable()
 export class Web3CareerCrawlerHandler implements CrawlerHandler {

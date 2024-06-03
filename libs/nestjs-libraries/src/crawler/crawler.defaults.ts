@@ -22,3 +22,8 @@ export const defaultCrawlerOptions: PlaywrightCrawlerOptions = {
   minConcurrency: 1,
   maxRequestRetries: 0,
 };
+
+
+export const defaultEnqueueOptions = {
+  limit: 25,
+}

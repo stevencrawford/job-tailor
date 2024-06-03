@@ -55,7 +55,7 @@ export class Web3CareerCrawlerHandler implements CrawlerHandler {
           // track in _redis
           await this._redis.sadd(`${this._identifier}:seen`, url);
         } else {
-          const links = await page.locator('.job-title-mobile > a').all();
+          const links = await page.locator('.job-title-mobile > a :not(.border-paid-table *)').all();
           const hrefs = await Promise.all(
             links.map(async (link) => await link.getAttribute('href'))
           );

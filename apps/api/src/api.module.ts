@@ -10,12 +10,12 @@ import { configSchema } from '@libs/nestjs-libraries/config/config.schema';
       isGlobal: true,
       cache: true,
       load: [config],
-      validate: (env) => configSchema.parse(env)
+      validate: (env) => configSchema.parse(env),
     }),
-    ApiModule
+    ApiModule,
   ],
   controllers: [],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class ApiModule {
 }

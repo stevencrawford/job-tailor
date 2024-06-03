@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { CheckJobs } from './tasks/check.jobs';
+import { RefreshJobsCron } from './tasks/refresh-jobs.cron';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventsModule } from '@libs/nestjs-libraries/common/events.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    EventsModule.registerAsync()
+    EventsModule.registerAsync(),
   ],
   controllers: [],
-  providers: [CheckJobs]
+  providers: [RefreshJobsCron],
 })
 export class CronModule {
 }

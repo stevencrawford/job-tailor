@@ -50,3 +50,6 @@ docker/*/.database
 # Next.js
 .next
 out
+
+# Playwright storage
+storage/

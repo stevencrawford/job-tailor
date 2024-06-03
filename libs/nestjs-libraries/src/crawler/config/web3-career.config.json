@@ -1,0 +1,11 @@
+{
+  "selectors": {
+    "title": "turbo-frame[id=\"job\"] h1",
+    "company": "turbo-frame[id=\"job\"] .position-sticky a",
+    "compensation": "turbo-frame[id=\"job\"] .mysticky .mt-4 p",
+    "location": "turbo-frame[id=\"job\"] .posting-category.location",
+    "length": "turbo-frame[id=\"job\"] .posting-category.category",
+    "roleType": "turbo-frame[id=\"job\"] .posting-category.workplaceTypes",
+    "description": "turbo-frame[id=\"job\"] .mx-auto"
+  }
+}

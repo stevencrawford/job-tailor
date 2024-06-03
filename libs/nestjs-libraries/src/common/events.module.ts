@@ -25,12 +25,10 @@ export class EventsModule {
           useFactory: (configService: ConfigService<Config>) => {
             const redisConfig = configService.getOrThrow<RedisConfig>('redis');
             return {
-              prefix: redisConfig.keyPrefix + ':events',
               connection: {
                 host: redisConfig.host,
                 port: redisConfig.port,
                 password: redisConfig.password,
-                db: redisConfig.db,
               },
             };
           },

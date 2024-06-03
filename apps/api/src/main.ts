@@ -12,13 +12,13 @@ async function bootstrap() {
     rawBody: true,
     cors: {
       credentials: true,
-      origin: [process.env.FRONTEND_URL]
-    }
+      origin: [process.env.FRONTEND_URL],
+    },
   });
   const configService: ConfigService<Config> = app.get(ConfigService);
 
   app.useGlobalPipes(new ValidationPipe({
-    transform: true
+    transform: true,
   }));
 
   app.use(cookieParser());

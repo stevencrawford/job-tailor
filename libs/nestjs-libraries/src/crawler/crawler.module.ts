@@ -7,6 +7,7 @@ import { CrawlerHandlerFactory } from './crawler-handler.factory';
 import { RedisModule } from '@songkeys/nestjs-redis';
 import { Config, RedisConfig } from '../config/config';
 import { Web3CareerCrawlerHandler } from './handlers/web3-careers.handler';
+import { HttpBinCrawlerHandler } from './handlers/httpbin-io.handler';
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { Web3CareerCrawlerHandler } from './handlers/web3-careers.handler';
     })
   ],
   providers: [
+    HttpBinCrawlerHandler,
     LinkedinCrawlerHandler,
     Web3CareerCrawlerHandler,
     CrawlerHandlerFactory,
@@ -37,6 +39,7 @@ import { Web3CareerCrawlerHandler } from './handlers/web3-careers.handler';
         return handles;
       },
       inject: [
+        HttpBinCrawlerHandler,
         LinkedinCrawlerHandler,
         Web3CareerCrawlerHandler,
       ],

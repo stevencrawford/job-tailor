@@ -6,7 +6,7 @@ export const defaultCrawlerOptions: PlaywrightCrawlerOptions = {
     useFingerprints: true,
     fingerprintOptions: {
       fingerprintGeneratorOptions: {
-        browsers: [BrowserName.chrome],
+        browsers: [BrowserName.chrome, BrowserName.firefox, BrowserName.edge],
         devices: [DeviceCategory.desktop],
         locales: ['en-GB'],
       },

@@ -32,12 +32,10 @@ export class Web3CareerCrawlerHandler implements CrawlerHandler {
   }
 
   handle(): PlaywrightCrawler {
-    console.log('Web3CareerCrawlerHandler.handle()');
     return new PlaywrightCrawler({
       ...defaultCrawlerOptions,
       requestHandler: async ({ request, page, enqueueLinks, log }) => {
         const { url } = request;
-        log.info(`[Web3CareerCrawlerHandler] Processing ${url}`);
         if (request.label === 'DETAIL') {
           const item = {
             url,

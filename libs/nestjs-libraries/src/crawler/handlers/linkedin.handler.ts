@@ -27,13 +27,10 @@ export class LinkedinCrawlerHandler implements CrawlerHandler {
   }
 
   handle(): PlaywrightCrawler {
-    console.log('LinkedinCrawlerHandler.handle()');
     return new PlaywrightCrawler({
       ...defaultCrawlerOptions,
-      requestHandler: async ({ request, page, enqueueLinks, log, pushData }) => {
-        const { url } = request;
-        log.info(`[LinkedinCrawlerHandler] Processing ${url}`);
-
+      requestHandler: async () => {
+        // TODO: implement request handler
         await sleep(1000);
       },
     });

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RefreshJobsCron } from './tasks/refresh-jobs.cron';
+import { FetchJobsCron } from './tasks/fetch-jobs.cron';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventsModule } from '@libs/nestjs-libraries/common/events.module';
 
@@ -9,7 +9,7 @@ import { EventsModule } from '@libs/nestjs-libraries/common/events.module';
     EventsModule.registerAsync(),
   ],
   controllers: [],
-  providers: [RefreshJobsCron],
+  providers: [FetchJobsCron],
 })
 export class CronModule {
 }

@@ -3,7 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { BullMqClient } from '@libs/nestjs-libraries/bull-mq-transport/client/bull-mq.client';
 
 @Injectable()
-export class RefreshJobsCron {
+export class FetchJobsCron {
 
   constructor(
     private _bullMqClient: BullMqClient,
@@ -11,11 +11,12 @@ export class RefreshJobsCron {
   }
 
   @Cron('* * * * *')
-  async refreshJobs() {
-    console.log('Kicking off Jobs Refresh...');
-    this._bullMqClient.emit('refresh-jobs', {
+  async fetchJobs() {
+    console.log('Kicking off Jobs Fetch...');
+    // TODO: Look up all Job sources and dispatch a message for each one
+    this._bullMqClient.emit('fetch-jobs', {
       payload: {
-        provider: 'web3.career',
+        source: 'web3.career',
       },
     });
   }

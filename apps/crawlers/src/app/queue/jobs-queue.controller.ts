@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern, Transport } from '@nestjs/microservices';
-import { RawJob } from '@libs/nestjs-libraries/crawler/crawler-job.interface';
-import { CrawlerService } from '@libs/nestjs-libraries/crawler/crawler.service';
+import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
+import { CrawlerService } from '../crawler.service';
 import { AIProviderFactory } from '@libs/nestjs-libraries/ai/ai-provider.factory';
 
 @Controller()

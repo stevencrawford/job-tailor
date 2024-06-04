@@ -41,7 +41,7 @@
       "exclude": [
         "apps/api-e2e/**/*",
         "apps/cron-e2e/**/*",
-        "apps/workers-e2e/**/*",
+        "apps/crawlers-e2e/**/*",
         "apps/frontend-e2e/**/*"
       ]
     },

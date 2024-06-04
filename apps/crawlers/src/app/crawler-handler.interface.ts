@@ -1,5 +1,5 @@
 import { PlaywrightCrawler } from 'crawlee';
-import { RawJob } from './crawler-job.interface';
+import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
 
 export interface CrawlerHandler {
   _identifier: string;

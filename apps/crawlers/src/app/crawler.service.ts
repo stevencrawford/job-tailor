@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CrawlerHandlerFactory } from './crawler-handler.factory';
-import { BullMqClient } from '../bull-mq-transport/client/bull-mq.client';
-import { RawJob } from './crawler-job.interface';
+import { BullMqClient } from '@libs/nestjs-libraries/bull-mq-transport/client/bull-mq.client';
+import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
 import { OnJobListener } from './crawler-handler.interface';
 import { Source } from 'crawlee';
 

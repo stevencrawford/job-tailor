@@ -1,7 +1,7 @@
 {
-  "name": "workers",
+  "name": "crawlers",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/workers/src",
+  "sourceRoot": "apps/crawlers/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -9,14 +9,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "workers:build"
+        "buildTarget": "crawlers:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "workers:build:development"
+          "buildTarget": "crawlers:build:development"
         },
         "production": {
-          "buildTarget": "workers:build:production"
+          "buildTarget": "crawlers:build:production"
         }
       }
     }

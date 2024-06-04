@@ -1,4 +1,4 @@
-import { RawJob } from '../crawler/crawler-job.interface';
+import { RawJob } from '../dto/job.dto';
 import { classifyResponseSchema, rankResponseSchema } from './schema/ai-response.schema';
 import { z } from 'zod';
 import { SupportProviders } from './ai-provider.factory';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RawJob } from '../../crawler/crawler-job.interface';
+import { RawJob } from '../../dto/job.dto';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../utils/json.util';
 import { AIProvider, Classification, RankedJobs } from '../ai-provider.interface';

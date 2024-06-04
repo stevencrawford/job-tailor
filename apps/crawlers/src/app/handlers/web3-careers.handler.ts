@@ -4,9 +4,9 @@ import { defaultCrawlerOptions } from '../crawler.defaults';
 import { PlaywrightCrawler, RobotsFile, sleep } from 'crawlee';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
-import { RawJob } from '../crawler-job.interface';
+import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
 import { optionalLocator } from '../utils/crawler.utils';
-import { asyncFilter } from '../../common/core.utils';
+import { asyncFilter } from '@libs/nestjs-libraries/utils/core.utils';
 import config from '../config/web3-career.config.json';
 import { JOB_TITLE_TRANSFORMER } from '../utils/web3-career.utils';
 

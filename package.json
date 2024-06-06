@@ -2,12 +2,18 @@
   "name": "@nx-monorepo",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx run-many --target=serve --projects=cron,crawlers --parallel=3 --skip-nx-cache",
+    "dev:build": "nx run-many --target=build --projects=cron,crawlers --parallel=3 --skip-nx-cache",
+    "prisma-generate": "cd ./libs/nestjs-libraries/src/database/prisma && prisma generate",
+    "prisma-db-push": "cd ./libs/nestjs-libraries/src/database/prisma && prisma db push"
+  },
   "private": true,
   "engines": {
     "node": ">=20.0.0 <21.0.0"
   },
   "dependencies": {
+    "@crawlee/browser-pool": "^3.10.1",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^10.1.1",
     "@nestjs/common": "^10.0.2",

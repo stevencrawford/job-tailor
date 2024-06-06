@@ -16,6 +16,6 @@ export class AIProviderFactory {
       }
     }
 
-    return null;
+    throw new Error(`No provider registered for ${identifier}.`);
   }
 }

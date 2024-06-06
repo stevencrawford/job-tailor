@@ -1,41 +1,38 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Inject, Logger } from '@nestjs/common';
 import { EventPattern, Transport } from '@nestjs/microservices';
 import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
 import { CrawlerService } from '../crawler.service';
-import { AIProviderFactory } from '@libs/nestjs-libraries/ai/ai-provider.factory';
+import { FETCH_JOBS, RAW_JOB_DETAILS, RAW_JOB_LIST_FILTER } from '@libs/nestjs-libraries/ai/common/queues.common';
+import { JobService } from '@libs/nestjs-libraries/services/job.service';
 
 @Controller()
 export class JobsQueueController {
+  readonly _logger = new Logger(JobsQueueController.name);
 
   constructor(
+    @Inject() private readonly _jobService: JobService,
     private readonly _crawlerService: CrawlerService,
-    private readonly _aiProviderFactory: AIProviderFactory,
   ) {
   }
 
-  @EventPattern('fetch-jobs', Transport.REDIS)
+  @EventPattern(FETCH_JOBS, Transport.REDIS)
   async refreshJobs(data: { source: string }) {
-    console.log(`[JobsQueueController] received fetch-jobs event for ${data.source}`);
+    this._logger.log(`Received fetch-jobs event for ${data.source}`);
     await this._crawlerService.crawl('https://web3.career/remote-jobs');
     // await this._crawlerService.crawl('https://httpbin.io/user-agent');
   }
 
-  @EventPattern('raw-job-list-filter', Transport.REDIS)
-  async processJobs(data: { source: string, jobs: Partial<RawJob>[] }) {
-    await this._aiProviderFactory.get('groq').rankJobTitles(data.jobs).then(rankedJobs => {
-      const nextStage: (Partial<RawJob> & {status?: string})[] = rankedJobs.results
-        .filter(value => value.status == 'APPLY');
-
-      console.log(`[JobsQueueController] Found ${nextStage.length} jobs to apply to. ${JSON.stringify(nextStage)}`);
-      this._crawlerService.crawlAll(data.source, nextStage.map(j => j.url));
-    });
+  @EventPattern(RAW_JOB_LIST_FILTER, Transport.REDIS)
+  async processJobs(data: { source: string, jobs: Pick<RawJob, 'title' | 'url' | 'timestamp'>[] }) {
+    const apply = await this._jobService.processAll('d6b986c9-edce-4041-94ab-8c953682c5df', data.source, data.jobs);
+    if (apply.length > 0) {
+      await this._crawlerService.crawlAll(data.source, apply);
+    }
   }
 
-  @EventPattern('raw-job-details', Transport.REDIS)
-  async processJob(data: { job: RawJob }) {
-    await this._aiProviderFactory.get('groq').classifyJob(data.job).then((classified) =>
-      console.log(`[JobsQueueController] Classified ${JSON.stringify(classified)}`)
-    );
+  @EventPattern(RAW_JOB_DETAILS, Transport.REDIS)
+  async processJob(data: { job: RawJob & { id: string } }) {
+    await this._jobService.classifyJob(data.job);
   }
 
 }

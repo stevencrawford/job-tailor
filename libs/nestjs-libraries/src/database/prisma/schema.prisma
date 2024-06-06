@@ -1,2 +1,62 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  jobs      Job[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id           String   @id @default(uuid())
+  url          String
+  title        String
+  source       String
+  description  String?
+  location     String?
+  length       String?
+  roleType     String?
+  compensation String?
+  company      String?
+  timestamp    BigInt
+  state        JobState @default(RAW)
+
+  // AI fields
+  score    Int      @default(0)
+  decision Decision @default(UNKNOWN)
+  reason   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum JobState {
+  ERROR
+  RAW
+  CLASSIFIED_TITLE
+  CLASSIFIED_FULL
+  PROCESSED
+  APPLIED
+  REJECTED
+}
+
+enum Decision {
+  UNKNOWN
+  CONSIDER
+  APPLY
+  IGNORE
+}

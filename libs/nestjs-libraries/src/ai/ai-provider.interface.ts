@@ -11,6 +11,6 @@ export interface AIProvider {
 
   classifyJob(job: RawJob): Promise<RawJob & Classification>;
 
-  rankJobTitles(jobs: Partial<RawJob>[]): Promise<RankedJobs>;
+  rankJobTitles(jobs: (Pick<RawJob, 'title' | 'url'> & { id: string })[]): Promise<RankedJobs>;
 }
 

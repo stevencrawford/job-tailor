@@ -20,5 +20,5 @@ export function timestampDiff(timestamp: number, unitOfTime: 'hour' | 'minute' |
       throw new Error('Invalid unit of time');
   }
 
-  return (now.getTime() - dateToCheck.getTime()) / msInInterval;
+  return Math.floor((now.getTime() - dateToCheck.getTime()) / msInInterval);
 }

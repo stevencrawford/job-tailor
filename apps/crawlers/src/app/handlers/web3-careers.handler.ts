@@ -1,25 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { CrawlerHandler, OnJobListener } from '../crawler-handler.interface';
+import { Injectable, Logger } from '@nestjs/common';
+import { CrawlerHandler, JobDispatcher } from '../crawler-handler.interface';
 import { defaultCrawlerOptions } from '../crawler.defaults';
 import { PlaywrightCrawler, RobotsFile, sleep } from 'crawlee';
-import { InjectRedis } from '@songkeys/nestjs-redis';
-import Redis from 'ioredis';
 import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
 import { optionalLocator } from '../utils/playwright.utils';
-import { asyncFilter } from '@libs/nestjs-libraries/utils/core.utils';
 import config from '../config/web3-career.config.json';
-import { JOB_TITLE_TRANSFORMER, TIMESTAMP_TRANSFORMER } from '../utils/web3-career.utils';
+import { TIMESTAMP_TRANSFORMER } from '../utils/web3-career.utils';
 import { timestampDiff } from '@libs/nestjs-libraries/utils/date.utils';
 
 @Injectable()
 export class Web3CareerCrawlerHandler implements CrawlerHandler {
+  readonly _logger = new Logger(Web3CareerCrawlerHandler.name);
+
+
   _identifier = 'web3.career';
 
   private _robotsFile: RobotsFile;
 
-  constructor(
-    @InjectRedis() private readonly _redis: Redis,
-  ) {
+  constructor() {
     this.initializeRobotsFile();
   }
 
@@ -32,20 +30,19 @@ export class Web3CareerCrawlerHandler implements CrawlerHandler {
     return domain.includes(this._identifier);
   }
 
-  handle(handler: OnJobListener): PlaywrightCrawler {
+  handle(dispatcher: JobDispatcher): PlaywrightCrawler {
     return new PlaywrightCrawler({
       ...defaultCrawlerOptions,
-      requestHandler: async ({ request, page, log }) => {
+      requestHandler: async ({ request, page, enqueueLinks, log }) => {
         const { url } = request;
         if (request.label === 'DETAIL') {
           const job = {
-            // TODO: ...request.userData['job']
-            url,
             source: this._identifier,
-            category: 'raw-job',
+            ...request.userData['job'],
+            url,
           } as RawJob;
 
-          job.title = await optionalLocator(page, config.selectors.title, JOB_TITLE_TRANSFORMER);
+          // job.title = await optionalLocator(page, config.selectors.title, JOB_TITLE_TRANSFORMER); // don't overwrite job title
           job.company = await optionalLocator(page, config.selectors.company);
           job.compensation = await optionalLocator(page, config.selectors.compensation);
           job.location = await optionalLocator(page, config.selectors.location);
@@ -53,39 +50,49 @@ export class Web3CareerCrawlerHandler implements CrawlerHandler {
           job.roleType = await optionalLocator(page, config.selectors.roleType);
           job.description = await page.locator(config.selectors.description).innerText();
 
-          handler.onJob({
+          dispatcher.dispatch({
             source: this._identifier,
-            job
+            job,
           });
-          // track in _redis
-          await this._redis.sadd(`${this._identifier}:seen`, url);
         } else {
+          let oldestJobTimestamp = new Date().getTime();
           const jobRows = await page.locator('table > tbody > tr.table_row:not(.border-paid-table)').all();
           const jobs: Partial<RawJob>[] = await Promise.all(
-            jobRows.map(async (row) => {
-              const link = row.locator('.job-title-mobile > a')
+            jobRows.map(async (row): Promise<Partial<RawJob>> => {
+              const link = row.locator('.job-title-mobile > a');
+              const timestamp = await optionalLocator(row, 'time', TIMESTAMP_TRANSFORMER);
+              oldestJobTimestamp = Math.min(oldestJobTimestamp, timestamp);
               return {
                 title: (await link.textContent()).trim(),
                 url: `https://${this._identifier}${await link.getAttribute('href')}`,
-                dateListed: await optionalLocator(row,'time', TIMESTAMP_TRANSFORMER),
-              }
-            })
+                timestamp,
+              };
+            }),
           );
 
-          const filteredJobs = asyncFilter(jobs, async (job: Partial<RawJob>) => {
+          const jobsToProcess = jobs.filter((job: Partial<RawJob>) => {
             const isAllowed = this._robotsFile.isAllowed(job.url);
-            const isSeen = await this._redis.sismember(`${this._identifier}:seen`, job.url) === 1;
-            const isTooOld = timestampDiff(job.timestamp, 'hour') > 3; // TODO: pass this age cutoff in userData
-            return isAllowed && !isTooOld && !isSeen;
+            const isStale = timestampDiff(job.timestamp, 'hour') > 24; // TODO: pass this age cutoff in userData
+            return isAllowed && !isStale;
           });
 
-          handler.onJobs({
+          dispatcher.dispatchPartial({
             source: this._identifier,
-            jobs: await filteredJobs
+            jobs: jobsToProcess,
           });
+
+          // Paginate only if:
+          // 1. The oldestJobTimestamp job found is less than 24 hours old
+          // 2. We found more jobs to process on the current page
+          if (timestampDiff(oldestJobTimestamp, 'hour') < 24 && jobsToProcess.length > 0) {
+            await enqueueLinks({
+              selector: '.page-item.next > a',
+              label: 'LIST',
+            });
+          }
         }
 
-        await sleep(2000)
+        await sleep(2000);
       },
     });
   }

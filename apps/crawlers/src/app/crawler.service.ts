@@ -2,24 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { CrawlerHandlerFactory } from './crawler-handler.factory';
 import { BullMqClient } from '@libs/nestjs-libraries/bull-mq-transport/client/bull-mq.client';
 import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
-import { OnJobListener } from './crawler-handler.interface';
+import { JobDispatcher } from './crawler-handler.interface';
 import { Source } from 'crawlee';
 
 @Injectable()
 export class CrawlerService {
-  private readonly _bullOnJobListener: OnJobListener;
+  private readonly _bullQueueDispatcher: JobDispatcher;
 
   constructor(
     private readonly crawlerHandlerFactory: CrawlerHandlerFactory,
     private _bullMqClient: BullMqClient,
   ) {
-    this._bullOnJobListener = {
-      onJob: (payload: { source: string, job: RawJob }) => {
+    this._bullQueueDispatcher = {
+      dispatch: (payload: { source: string, job: RawJob }) => {
         this._bullMqClient.emit('raw-job-details', {
           payload,
         });
       },
-      onJobs: (payload: { source: string, jobs: Partial<RawJob>[] }) => {
+      dispatchPartial: (payload: { source: string, jobs: Partial<RawJob>[] }) => {
         this._bullMqClient.emit('raw-job-list-filter', {
           payload,
         });
@@ -28,7 +28,7 @@ export class CrawlerService {
   }
 
   async crawl(url: string): Promise<void> {
-    const crawler = this.crawlerHandlerFactory.handle(url, this._bullOnJobListener);
+    const crawler = this.crawlerHandlerFactory.handle(url, this._bullQueueDispatcher);
     if (!crawler) {
       throw new Error(`url ${url} is not supported.`);
     }
@@ -38,14 +38,21 @@ export class CrawlerService {
     await crawler.run();
   }
 
-  async crawlAll(source: string, urls: string[]): Promise<void> {
-    const crawler = this.crawlerHandlerFactory.handle(`https://${source}`, this._bullOnJobListener);
+  async crawlAll(source: string, jobs: Partial<RawJob>[]): Promise<void> {
+    const crawler = this.crawlerHandlerFactory.handle(`https://${source}`, this._bullQueueDispatcher);
     if (!crawler) {
       throw new Error(`source ${source} is not supported.`);
     }
 
-    await crawler.addRequests(urls.map(url => ({ url, label: 'DETAIL' } as Source)));
+    await crawler.addRequests(jobs.map(job => ({
+      url: job.url,
+      label: 'DETAIL',
+      userData: {
+        job
+      }
+    } as Source)));
 
     await crawler.run();
   }
+
 }

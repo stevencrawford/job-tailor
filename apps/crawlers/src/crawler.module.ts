@@ -9,9 +9,11 @@ import config, { Config, RedisConfig } from '@libs/nestjs-libraries/config/confi
 import { Web3CareerCrawlerHandler } from './app/handlers/web3-careers.handler';
 import { HttpBinCrawlerHandler } from './app/handlers/httpbin-io.handler';
 import { JobsQueueController } from './app/queue/jobs-queue.controller';
-import { AIModule } from '@libs/nestjs-libraries/ai/ai.module';
 import { configSchema } from '@libs/nestjs-libraries/config/config.schema';
 import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.module';
+import { JobService } from '@libs/nestjs-libraries/services/job.service';
+import { AIModule } from '@libs/nestjs-libraries/ai/ai.module';
+import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module';
 
 @Module({
   imports: [
@@ -48,7 +50,8 @@ import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.m
         };
       },
     }),
-    AIModule
+    DatabaseModule,
+    AIModule,
   ],
   providers: [
     HttpBinCrawlerHandler,
@@ -67,6 +70,7 @@ import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.m
       ],
     },
     CrawlerService,
+    JobService
   ],
   controllers: [JobsQueueController],
 })

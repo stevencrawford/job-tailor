@@ -22,11 +22,11 @@ export class OpenAIProvider implements AIProvider {
 
   async classifyJob(job: RawJob): Promise<RawJob & Classification> {
     // TODO: implement me
-    return Promise.resolve(null);
+    throw new Error(`implement me`);
   }
 
-  async rankJobTitles(jobs: Partial<RawJob>[]): Promise<RankedJobs> {
-    const message = `Return a JSON { "results": Array<{"title": string, "url": string, "score": number, "status": "APPLY" | "CONSIDER" | "REJECT" }>}.
+  async rankJobTitles(jobs: Pick<RawJob, 'title' | 'url'>[]): Promise<RankedJobs> {
+    const message = `Return a JSON { "results": Array<{"title": string, "url": string, "score": number, "decision": "APPLY" | "CONSIDER" | "REJECT" }>}.
 
 An example response would be:
 {
@@ -35,13 +35,13 @@ An example response would be:
       "title": "Some Job Title",
       "url": "https://example.com/some-job-title",
       "score": 0-10,
-      "status": "APPLY" | "CONSIDER" | "REJECT"
+      "decision": "APPLY" | "CONSIDER" | "REJECT"
     }
     ...
   ]
 }
 
-Rules for "status" field are: score < 5: REJECT, 5 <= score < 7: CONSIDER, and score >= 7: APPLY  
+Rules for "decision" field are: score < 5: REJECT, 5 <= score < 7: CONSIDER, and score >= 7: APPLY  
 
 The list of jobs:
 
@@ -69,6 +69,10 @@ ${JSON.stringify(jobs)}
     });
 
     const content = response.choices[0].message.content;
+
+    if (!content) {
+      throw new Error(`OpenAI was unable to process the request.`);
+    }
 
     const res = parseJSON(content);
     return rankResponseSchema.parse(res);

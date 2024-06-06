@@ -4,7 +4,6 @@ export interface RawJob {
   location: string;
   length: string;
   roleType: string;
-  category: string;
   title: string;
   compensation: string;
   company: string;

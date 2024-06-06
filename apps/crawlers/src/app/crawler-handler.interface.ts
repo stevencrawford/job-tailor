@@ -6,11 +6,11 @@ export interface CrawlerHandler {
 
   supports(url: string): boolean;
 
-  handle(handler: OnJobListener): PlaywrightCrawler;
+  handle(handler: JobDispatcher): PlaywrightCrawler;
 }
 
-export interface OnJobListener {
-  onJob(data: { source: string, job: RawJob }): void;
+export interface JobDispatcher {
+  dispatch(data: { source: string, job: RawJob }): void;
 
-  onJobs(data: { source: string, jobs: Partial<RawJob>[] }): void;
+  dispatchPartial(data: { source: string, jobs: Partial<RawJob>[] }): void;
 }

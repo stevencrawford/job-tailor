@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
-import { JobRepository } from './jobs/job.repository';
 import { PrismaRepository, PrismaService } from './prisma.service';
+import { JobRepository } from './jobs/job.repository';
+import { ConnectorRepository } from './connectors/connector.repository';
 
 @Global()
 @Module({
@@ -9,7 +10,8 @@ import { PrismaRepository, PrismaService } from './prisma.service';
   providers: [
     PrismaService,
     PrismaRepository,
-    JobRepository
+    JobRepository,
+    ConnectorRepository,
   ],
   get exports() {
     return this.providers;

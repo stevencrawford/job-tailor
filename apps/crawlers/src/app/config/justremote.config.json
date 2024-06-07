@@ -1,0 +1,13 @@
+{
+  "selectors": {
+    "title": "h1[class*=\"job-title__StyledJobTitle\"]",
+    "company": "div[class*=\"new-job-preview-details__JobApply\"] >* a[class*=\"new-job-preview-details__CompanyName\"]",
+    "location": "div[class*=\"job-meta__Wrapper\"] :nth-child(2)",
+    "length": "div[class*=\"job-meta__Wrapper\"] :nth-child(1)",
+    "description": "div[class*=\"new-job-preview-details__PaddingWrapper\"]"
+  },
+  "staleJobThreshold": {
+    "value": 15,
+    "unit": "day"
+  }
+}

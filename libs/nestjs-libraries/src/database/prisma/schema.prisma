@@ -11,12 +11,52 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  jobs      Job[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  name                 String
+  jobs                 Job[]
+  userConnectorConfigs UserConnectorConfig[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+model Connector {
+  id                   String                @id @default(uuid())
+  name                 String                @unique
+  host                 String
+  lastSuccess          DateTime?
+  status               ConnectorStatus
+  healthStatus         Boolean               @default(true)
+  pageSelectors        PageSelector[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  Job                  Job[]
+  userConnectorConfigs UserConnectorConfig[] @relation("ConnectorToUserConnectorConfig")
+}
+
+model PageSelector {
+  id          String    @id @default(uuid())
+  urlPattern  String
+  config      Json
+  connectorId String
+  connector   Connector @relation(fields: [connectorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model UserConnectorConfig {
+  id          String    @id @default(uuid())
+  searchTerms String?
+  location    String?
+  level       JobLevel?
+  userId      String
+  connectorId String
+  user        User      @relation(fields: [userId], references: [id])
+  connector   Connector @relation(fields: [connectorId], references: [id], name: "ConnectorToUserConnectorConfig")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, connectorId])
 }
 
 model Job {
@@ -38,10 +78,23 @@ model Job {
   decision Decision @default(UNKNOWN)
   reason   String?
 
+  // connector fields
+  connector Connector? @relation(fields: [source], references: [name])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+
+  // user fields
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+enum JobLevel {
+  INTERN
+  ENTRY
+  MID_SENIOR
+  DIRECTOR
+  EXECUTIVE
 }
 
 enum JobState {
@@ -52,6 +105,11 @@ enum JobState {
   PROCESSED
   APPLIED
   REJECTED
+}
+
+enum ConnectorStatus {
+  ONLINE
+  OFFLINE
 }
 
 enum Decision {

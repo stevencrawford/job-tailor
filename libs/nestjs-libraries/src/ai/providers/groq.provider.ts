@@ -23,7 +23,7 @@ export class GroqProvider implements AIProvider {
   }
 
   async classifyJob(job: RawJob): Promise<RawJob & Classification> {
-    const message = `Return a JSON { "score": number, "decision": "APPLY" | "CONSIDER" | "IGNORE", "reason": string }.
+    const message = `Return a JSON { "score": number, "decision": "APPLY" | "CONSIDER" | "IGNORE", "reason": string? }.
 
 An example response would be:
 {
@@ -34,7 +34,7 @@ An example response would be:
 
 Rules:
 1. The "decision" field: score < 5: IGNORE, 5 <= score < 7: CONSIDER, and score >= 7: APPLY. 
-2. When the decision is not "APPLY" include the "reason" field to explain why I should "CONSIDER" or "IGNORE" the role.
+2. When the decision is not "APPLY" include "reason" field to explain why I should "CONSIDER" or "IGNORE" the role, otherwise exclude the reason field.
 
 The job specification:
 ###

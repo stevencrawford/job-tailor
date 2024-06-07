@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config, { Config, RedisConfig } from '@libs/nestjs-libraries/config/config';
 import { configSchema } from '@libs/nestjs-libraries/config/config.schema';
 import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.module';
+import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.m
           },
         };
       },
-    })
+    }),
+    DatabaseModule,
   ],
   providers: [FetchJobsCron],
 })

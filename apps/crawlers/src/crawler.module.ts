@@ -14,6 +14,7 @@ import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.m
 import { JobService } from '@libs/nestjs-libraries/services/job.service';
 import { AIModule } from '@libs/nestjs-libraries/ai/ai.module';
 import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module';
+import { JustRemoteCrawlerHandler } from './app/handlers/just-remote.handler';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module'
     HttpBinCrawlerHandler,
     LinkedinCrawlerHandler,
     Web3CareerCrawlerHandler,
+    JustRemoteCrawlerHandler,
     CrawlerHandlerFactory,
     {
       provide: 'CRAWLER_HANDLERS',
@@ -67,6 +69,7 @@ import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module'
         HttpBinCrawlerHandler,
         LinkedinCrawlerHandler,
         Web3CareerCrawlerHandler,
+        JustRemoteCrawlerHandler,
       ],
     },
     CrawlerService,

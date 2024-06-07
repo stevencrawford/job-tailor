@@ -1,19 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CrawlerHandler } from '../crawler-handler.interface';
-import { defaultCrawlerOptions } from '../crawler.defaults';
-import { PlaywrightCrawler, RobotsFile, sleep } from 'crawlee';
-import { InjectRedis } from '@songkeys/nestjs-redis';
-import Redis from 'ioredis';
+import { HandlerConfig } from '../crawler-handler.interface';
+import { BaseHandler } from './base.handler';
+import { Page } from '@playwright/test';
+import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
+import { RobotsFile } from 'crawlee';
 
 @Injectable()
-export class HttpBinCrawlerHandler implements CrawlerHandler {
-  _identifier = 'httpbin.io';
+export class HttpBinCrawlerHandler extends BaseHandler {
+  readonly _identifier = 'httpbin.io';
+  readonly _config: HandlerConfig = {
+    selectors: {
+      title: '',
+      description: '',
+    },
+    staleJobThreshold: {
+      value: 1,
+      unit: 'day',
+    },
+  };
 
-  private _robotsFile: RobotsFile;
-
-  constructor(
-    @InjectRedis() private readonly _redis: Redis,
-  ) {
+  constructor() {
+    super();
     this.initializeRobotsFile();
   }
 
@@ -21,19 +28,17 @@ export class HttpBinCrawlerHandler implements CrawlerHandler {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  supports(url: string): boolean {
-    const domain = new URL(url).hostname.split('.').slice(-2).join('.').toLowerCase();
-    return domain.includes(this._identifier);
+  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+    return `https://${this._identifier}/user-agent`;
   }
 
-  handle(): PlaywrightCrawler {
-    return new PlaywrightCrawler({
-      ...defaultCrawlerOptions,
-      requestHandler: async ({ page }) => {
-        await page.screenshot({ path: `${this._identifier}_screenshot.png` });
+  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]> {
+    // Since this is a demo handler, we can return an empty array
+    return [];
+  }
 
-        await sleep(1000);
-      },
-    });
+  async getDetailPageContent(page: Page): Promise<Partial<RawJob>> {
+    // Since this is a demo handler, we can return an empty object
+    return {};
   }
 }

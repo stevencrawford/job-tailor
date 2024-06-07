@@ -16,17 +16,16 @@ export class JobsQueueController {
   }
 
   @EventPattern(FETCH_JOBS, Transport.REDIS)
-  async refreshJobs(data: { source: string }) {
-    this._logger.log(`Received fetch-jobs event for ${data.source}`);
-    await this._crawlerService.crawl('https://web3.career/remote-jobs');
-    // await this._crawlerService.crawl('https://httpbin.io/user-agent');
+  async refreshJobs(data: { connector: string }) {
+    this._logger.log(`Received fetch-jobs event for ${data.connector}`);
+    await this._crawlerService.crawl(data.connector);
   }
 
   @EventPattern(RAW_JOB_LIST_FILTER, Transport.REDIS)
-  async processJobs(data: { source: string, jobs: Pick<RawJob, 'title' | 'url' | 'timestamp'>[] }) {
-    const apply = await this._jobService.processAll('d6b986c9-edce-4041-94ab-8c953682c5df', data.source, data.jobs);
+  async processJobs(data: { connector: string, userId: string, jobs: Pick<RawJob, 'title' | 'url' | 'timestamp'>[] }) {
+    const apply = await this._jobService.processAll(data.userId, data.connector, data.jobs);
     if (apply.length > 0) {
-      await this._crawlerService.crawlAll(data.source, apply);
+      await this._crawlerService.crawlAll(data.connector, apply);
     }
   }
 

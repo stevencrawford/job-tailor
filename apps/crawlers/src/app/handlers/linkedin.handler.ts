@@ -7,7 +7,7 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class LinkedinCrawlerHandler implements CrawlerHandler {
-  _identifier = 'linkedin.com';
+  readonly _identifier = 'linkedin.com';
 
   private _robotsFile: RobotsFile;
 
@@ -24,6 +24,10 @@ export class LinkedinCrawlerHandler implements CrawlerHandler {
   supports(url: string): boolean {
     const domain = new URL(url).hostname.split('.').slice(-2).join('.').toLowerCase();
     return domain.includes(this._identifier);
+  }
+
+  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+    return '';
   }
 
   handle(): PlaywrightCrawler {

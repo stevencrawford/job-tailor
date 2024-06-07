@@ -15,3 +15,6 @@ export async function optionalLocator<T>(
   }
   return Promise.resolve(null);
 }
+
+export const DATETIME_TRANSFORMER = (element: Locator) => element.getAttribute('datetime')
+  .then(datetime => new Date(datetime.trim()).getTime());

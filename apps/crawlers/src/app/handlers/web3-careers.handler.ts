@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HandlerConfig, handlerConfigSchema } from '../crawler-handler.interface';
 import { RawJob } from '@libs/nestjs-libraries/dto/job.dto';
-import { optionalLocator } from '../utils/playwright.utils';
+import { DATETIME_TRANSFORMER, optionalLocator } from '../utils/playwright.utils';
 import { Locator, Page } from '@playwright/test';
 import { BaseHandler } from './base.handler';
 import web3CareerConfigJson from '../config/web3-career.config.json';
@@ -31,7 +31,7 @@ export class Web3CareerCrawlerHandler extends BaseHandler {
     return Promise.all(
       jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>> => {
         const link = row.locator('.job-title-mobile > a');
-        const timestamp = await optionalLocator(row, 'time', TIMESTAMP_TRANSFORMER);
+        const timestamp = await optionalLocator(row, 'time', DATETIME_TRANSFORMER);
         return {
           title: (await link.textContent()).trim(),
           url: new URL(`https://${this._identifier}${await link.getAttribute('href')}`).toString(),
@@ -52,8 +52,3 @@ export class Web3CareerCrawlerHandler extends BaseHandler {
     };
   }
 }
-
-// TRANSFORMERS
-
-const TIMESTAMP_TRANSFORMER = (element: Locator) => element.getAttribute('datetime')
-  .then(datetime => new Date(datetime.trim()).getTime());

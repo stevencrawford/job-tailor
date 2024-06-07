@@ -15,6 +15,8 @@ import { JobService } from '@libs/nestjs-libraries/services/job.service';
 import { AIModule } from '@libs/nestjs-libraries/ai/ai.module';
 import { DatabaseModule } from '@libs/nestjs-libraries/database/database.module';
 import { JustRemoteCrawlerHandler } from './app/handlers/just-remote.handler';
+import { ArcDevCrawlerHandler } from './app/handlers/arc-dev.handler';
+import { RemoteOkCrawlerHandler } from './app/handlers/remoteok.handler';
 
 @Module({
   imports: [
@@ -59,6 +61,8 @@ import { JustRemoteCrawlerHandler } from './app/handlers/just-remote.handler';
     LinkedinCrawlerHandler,
     Web3CareerCrawlerHandler,
     JustRemoteCrawlerHandler,
+    ArcDevCrawlerHandler,
+    RemoteOkCrawlerHandler,
     CrawlerHandlerFactory,
     {
       provide: 'CRAWLER_HANDLERS',
@@ -70,6 +74,8 @@ import { JustRemoteCrawlerHandler } from './app/handlers/just-remote.handler';
         LinkedinCrawlerHandler,
         Web3CareerCrawlerHandler,
         JustRemoteCrawlerHandler,
+        ArcDevCrawlerHandler,
+        RemoteOkCrawlerHandler,
       ],
     },
     CrawlerService,

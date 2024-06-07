@@ -32,6 +32,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "crawlee": "^3.10.1",
+    "date-fns": "^3.6.0",
     "groq-sdk": "^0.4.0",
     "ioredis": "^5.4.1",
     "json5": "^2.2.3",

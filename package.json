@@ -7,6 +7,8 @@
     "dev": "nx run-many --target=serve --projects=cron,crawlers --parallel=3 --skip-nx-cache",
     "crawlers": "nx run crawlers:serve:development --skip-nx-cache",
     "cron": "nx run cron:serve:development --skip-nx-cache",
+    "docker:up": "find docker -name \"docker-compose.yml\" -print0 | xargs -0 -I {} sh -c \"cd \\$(dirname {}) && docker-compose up -d\"",
+    "docker:down": "find docker -name \"docker-compose.yml\" -print0 | xargs -0 -I {} sh -c \"cd \\$(dirname {}) && docker-compose down\"",
     "prisma-generate": "cd ./libs/nestjs-libraries/src/database/prisma && prisma generate",
     "prisma-db-push": "cd ./libs/nestjs-libraries/src/database/prisma && prisma db push"
   },

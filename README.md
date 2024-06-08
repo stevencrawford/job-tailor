@@ -48,7 +48,7 @@ Create a .env file in the root directory and add the required environment variab
 Set up the database:
 
 ```bash
-pnpm run docker up
+pnpm run docker:up
 ```
 
 This will start PostgresDB and Redis containers.

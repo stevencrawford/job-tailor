@@ -64,6 +64,8 @@ model Job {
   url          String
   title        String
   source       String
+  category     String?
+  level        JobLevel @default(UNKNOWN)
   description  String?
   location     String?
   length       String?
@@ -71,12 +73,6 @@ model Job {
   compensation String?
   company      String?
   timestamp    BigInt
-  state        JobState @default(RAW)
-
-  // AI fields
-  score    Int      @default(0)
-  decision Decision @default(UNKNOWN)
-  reason   String?
 
   // connector fields
   connector Connector? @relation(fields: [source], references: [name])
@@ -95,16 +91,7 @@ enum JobLevel {
   MID_SENIOR
   DIRECTOR
   EXECUTIVE
-}
-
-enum JobState {
-  ERROR
-  RAW
-  CLASSIFIED_TITLE
-  CLASSIFIED_FULL
-  PROCESSED
-  APPLIED
-  REJECTED
+  UNKNOWN
 }
 
 enum ConnectorStatus {

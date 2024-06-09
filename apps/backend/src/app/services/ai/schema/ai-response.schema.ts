@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { JobLevel } from '../../job/job.interface';
 
 export enum AI_DECISION {
   UNKNOWN = 'UNKNOWN',
@@ -28,12 +29,22 @@ export const classifyResponseSchema = z.object({
   reason: z.string().or(null).optional(),
 });
 
-export const rankResponseSchema = z.object({
-  results: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      url: z.string().url(),
-    }).and(classifyResponseSchema),
-  ),
+export const categorizedJobSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  url: z.string().url(),
+  category: z.string(),
+  location: z.string().or(null).optional(),
+  level: z.enum([
+    JobLevel.INTERN,
+    JobLevel.ENTRY,
+    JobLevel.MID_SENIOR,
+    JobLevel.DIRECTOR,
+    JobLevel.EXECUTIVE,
+    JobLevel.UNKNOWN
+  ]),
+});
+
+export const categorizeResponseSchema = z.object({
+  results: z.array(categorizedJobSchema),
 });

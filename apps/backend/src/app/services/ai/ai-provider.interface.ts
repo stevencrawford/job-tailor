@@ -1,16 +1,18 @@
 import { RawJob } from '../job/job.interface';
-import { classifyResponseSchema, rankResponseSchema } from './schema/ai-response.schema';
+import { categorizedJobSchema, classifyResponseSchema } from './schema/ai-response.schema';
 import { z } from 'zod';
 import { SupportProviders } from './ai-provider.factory';
 
 export type Classification = z.infer<typeof classifyResponseSchema>;
-export type RankedJobs = z.infer<typeof rankResponseSchema>;
+export type CategorizedJob = z.infer<typeof categorizedJobSchema>;
 
 export interface AIProvider {
   identifier: SupportProviders;
 
   classifyJob(job: RawJob): Promise<RawJob & Classification>;
 
-  rankJobTitles(jobs: (Pick<RawJob, 'title' | 'url'> & { id: string })[]): Promise<RankedJobs>;
+  categorizeJobs(jobs: ({
+    id: string
+  } & Pick<RawJob, 'title' | 'url' | 'location'>)[]): Promise<{ results?: CategorizedJob[] }>;
 }
 

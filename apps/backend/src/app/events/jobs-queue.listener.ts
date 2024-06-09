@@ -24,9 +24,9 @@ export class JobsQueueListener {
   @EventPattern(RAW_JOB_LIST_FILTER, Transport.REDIS)
   async processJobs(data: { connector: string, userId: string, jobs: Pick<RawJob, 'title' | 'url' | 'timestamp'>[] }) {
     const apply = await this._jobService.processAll(data.userId, data.connector, data.jobs);
-    if (apply.length > 0) {
-      await this._webCollectorService.crawlAll(data.connector, apply);
-    }
+    // if (apply.length > 0) {
+    //   await this._webCollectorService.crawlAll(data.connector, apply);
+    // }
   }
 
   @EventPattern(RAW_JOB_DETAILS, Transport.REDIS)

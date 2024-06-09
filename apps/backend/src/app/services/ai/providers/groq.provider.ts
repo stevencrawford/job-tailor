@@ -1,14 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RawJob } from '../../job/job.interface';
+import { JobCategory, JobLevel, RawJob } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../../utils/json.util';
-import { AIProvider, Classification, RankedJobs } from '../ai-provider.interface';
+import { AIProvider, CategorizedJob, Classification } from '../ai-provider.interface';
 import Groq from 'groq-sdk';
-import { CLASSIFIED_TYPE, classifyResponseSchema, rankResponseSchema } from '../schema/ai-response.schema';
+import { categorizeResponseSchema, CLASSIFIED_TYPE, classifyResponseSchema } from '../schema/ai-response.schema';
 import { ASSISTANT_MESSAGE } from '../ai-provider.constants';
 import { SupportProviders } from '../ai-provider.factory';
 
-const GROQ_MODEL = 'llama3-70b-8192';
+const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
+
+// const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
 
 @Injectable()
 export class GroqProvider implements AIProvider {
@@ -35,7 +37,7 @@ An example response would be:
 
 Rules:
 1. The "decision" field: score < 5: IGNORE, 5 <= score < 7: CONSIDER, and score >= 7: APPLY. 
-2. When the decision is not "APPLY" include "reason" field to explain why I should "CONSIDER" or "IGNORE" the role, otherwise set to decision to an empty string.
+2. When the decision field is not "APPLY" include a "reason" field to explain why I should "CONSIDER" or "IGNORE" the role, otherwise set exclude decision field.
 
 The job specification:
 ###
@@ -55,7 +57,7 @@ ${job.description}
       ],
       n: 1,
       temperature: 1,
-      model: GROQ_MODEL,
+      model: GROQ_MODEL_LLAMA3_70B,
       response_format: {
         type: 'json_object',
       },
@@ -76,38 +78,34 @@ ${job.description}
     };
   }
 
-
-  async rankJobTitles(jobs: Pick<RawJob, 'title' | 'url'>[]): Promise<RankedJobs> {
-    const message = `Return a JSON { "results": Array<{"id": string, "title": string, "url": string, "score": number, "decision": "APPLY" | "CONSIDER" | "IGNORE", state: "CLASSIFIED_TITLE" }>}.
-
+  async categorizeJobs(jobs: ({
+    id: string
+  } & Pick<RawJob, 'title' | 'url' | 'location'>)[]): Promise<{ results?: CategorizedJob[] }> {
+    const message = `Return a JSON array { "results": Array<{"id": string, "title": string, "url": string, "category": string, "level": string } }
 An example response would be:
 {
   "results": [
     {
       "id": "Job ID passed in",
       "title": "Job Title passed in",
-      "state": "CLASSIFIED_TITLE",
-      "url": "https://...",
-      "score": 0-10,
-      "decision": "APPLY" | "CONSIDER" | "IGNORE"
+      "url": "Job URL passed in",
+      "category": "${JobCategory.ENGINEER}",
+      "level": "${JobLevel.MID_SENIOR}",
     }
     ...
   ]
 }
-
-Rules:
-1. The "decision" field: score < 5: "IGNORE", 5 <= score < 7: "CONSIDER", and score >= 7: "APPLY".  
-
-The list of jobs:
-###
-${JSON.stringify(jobs)}
-###
+Given a list of jobs: ID|TITLE|URL|LOCATION
+---
+${jobs.map(j => `${j.id}|${j.title}|${j.url}|${j.location}`).join('\n')}}
 `;
     const response = await this._groq.chat.completions.create({
       messages: [
         {
           role: 'assistant',
-          content: ASSISTANT_MESSAGE,
+          content: `You are a recruitment advisor who summarizes Job titles into category and level. 
+Categories: ${Object.values(JobCategory).join(',')}
+Levels: ${Object.values(JobLevel).join(',')}`,
         },
         {
           role: 'user',
@@ -116,7 +114,7 @@ ${JSON.stringify(jobs)}
       ],
       n: 1,
       temperature: 1,
-      model: GROQ_MODEL,
+      model: GROQ_MODEL_LLAMA3_70B,
       response_format: {
         type: 'json_object',
       },
@@ -129,7 +127,8 @@ ${JSON.stringify(jobs)}
     }
 
     const res = parseJSON(content);
-    return rankResponseSchema.parse(res);
+    this._logger.log(`Groq produced output: ${JSON.stringify(res)}`);
+    return categorizeResponseSchema.parse(res);
   }
 
 }

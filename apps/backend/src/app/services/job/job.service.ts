@@ -3,9 +3,8 @@ import { RawJob } from './job.interface';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import { AIProviderFactory } from '../ai/ai-provider.factory';
 import Redis from 'ioredis';
-import { AI_DECISION } from '../ai/schema/ai-response.schema';
 import { asyncFilter } from '../../utils/core.utils';
-import { Classification } from '../ai/ai-provider.interface';
+import { CategorizedJob } from '../ai/ai-provider.interface';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -48,26 +47,29 @@ export class JobService {
       }),
     );
 
-    // 3. Process them via AI to get decision
-    const ranked = await this._aiProviderFactory.get('groq').rankJobTitles(saved);
-    this._logger.log(`[${source}] Ranked ${ranked.results.length} jobs.`);
+    // 3. Process them via AI to get job category and level
+    const categorized = await this._aiProviderFactory.get('groq').categorizeJobs(saved);
+    this._logger.log(`[${source}] Categorized ${categorized.results.length} jobs.`);
 
-    // 4. Update decision for all jobs
+    // 4. Update categorization for all jobs
     await Promise.all(
-      ranked.results.map(async (job: (Partial<RawJob> & { id: string } & Classification)) => {
+      categorized.results?.map(async (job: (Partial<RawJob> & { id: string } & CategorizedJob)) => {
         await this._prismaService.job.update({
           where: {
             id: job.id,
           },
-          data: { ...job },
+          data: {
+            category: job.category,
+            level: job.level,
+            location: job.location,
+          },
         });
       }),
     );
 
-    // 5. Filter to only job where decision == APPLY
-    const apply = ranked.results
-      .filter(value => value.decision == AI_DECISION.APPLY);
-    this._logger.log(`[${source}] Found ${apply.length} jobs to apply to.`);
+    // // 5. Filter to only job where decision == APPLY
+    // const apply = categorized.results?.filter(value => value.decision == AI_DECISION.APPLY);
+    // this._logger.log(`[${source}] Found ${apply.length} jobs to apply to.`);
 
     // 6. Track to avoid revisiting
     await Promise.all(jobs.map(job => {
@@ -84,7 +86,7 @@ export class JobService {
       }
     });
 
-    return apply;
+    return categorized.results;
   }
 
   async classifyJob(job: RawJob & { id: string }) {

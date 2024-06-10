@@ -9,8 +9,7 @@ import { ASSISTANT_MESSAGE } from '../ai-provider.constants';
 import { SupportProviders } from '../ai-provider.factory';
 
 const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
-
-// const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
+const GROQ_MODEL_LLAMA3_8B = 'llama3-8b-8192';
 
 @Injectable()
 export class GroqProvider implements AIProvider {
@@ -95,17 +94,19 @@ An example response would be:
     ...
   ]
 }
-Given a list of jobs: ID|TITLE|URL|LOCATION
+Given a list of jobs: ID|TITLE|URL
 ---
-${jobs.map(j => `${j.id}|${j.title}|${j.url}|${j.location}`).join('\n')}}
+${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
 `;
     const response = await this._groq.chat.completions.create({
       messages: [
         {
           role: 'assistant',
           content: `You are a recruitment advisor who summarizes Job titles into category and level. 
+Your choices for category and level are:
 Categories: ${Object.values(JobCategory).join(',')}
-Levels: ${Object.values(JobLevel).join(',')}`,
+Levels: ${Object.values(JobLevel).join(',')}
+It is very important that you only create output using these values.`,
         },
         {
           role: 'user',
@@ -113,7 +114,7 @@ Levels: ${Object.values(JobLevel).join(',')}`,
         },
       ],
       n: 1,
-      temperature: 1,
+      temperature: 0.2,
       model: GROQ_MODEL_LLAMA3_70B,
       response_format: {
         type: 'json_object',

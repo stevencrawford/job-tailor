@@ -11,52 +11,55 @@ generator client {
 }
 
 model User {
-  id                   String                @id @default(uuid())
-  email                String                @unique
-  name                 String
-  jobs                 Job[]
-  userConnectorConfigs UserConnectorConfig[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  id    String @id @default(uuid())
+  email String @unique
+  name  String
+
+  matchedJobs    JobMatch[]
+  SearchCriteria SearchCriteria?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SearchCriteria {
+  id          String   @id @default(uuid())
+  jobCategory String
+  jobLevel    JobLevel
+  region      String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Connector {
-  id                   String                @id @default(uuid())
-  name                 String                @unique
-  host                 String
-  lastSuccess          DateTime?
-  status               ConnectorStatus
-  healthStatus         Boolean               @default(true)
-  pageSelectors        PageSelector[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  Job                  Job[]
-  userConnectorConfigs UserConnectorConfig[] @relation("ConnectorToUserConnectorConfig")
+  id           String          @id @default(uuid())
+  name         String          @unique
+  host         String
+  lastSuccess  DateTime?
+  status       ConnectorStatus
+  healthStatus Boolean         @default(true)
+
+  pageSelectors PageSelector[]
+  Job           Job[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PageSelector {
-  id          String    @id @default(uuid())
-  urlPattern  String
-  config      Json
+  id         String @id @default(uuid())
+  urlPattern String
+  config     Json
+
   connectorId String
   connector   Connector @relation(fields: [connectorId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
 
-model UserConnectorConfig {
-  id          String    @id @default(uuid())
-  searchTerms String?
-  location    String?
-  level       JobLevel?
-  userId      String
-  connectorId String
-  user        User      @relation(fields: [userId], references: [id])
-  connector   Connector @relation(fields: [connectorId], references: [id], name: "ConnectorToUserConnectorConfig")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@unique([userId, connectorId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Job {
@@ -81,14 +84,32 @@ model Job {
   updatedAt DateTime @updatedAt
 
   // user fields
+  JobMatch JobMatch[]
+}
+
+model JobMatch {
+  id       String   @id @default(uuid())
+  score    Float
+  decision Decision @default(UNKNOWN)
+  reason   String?
+
   userId String
   user   User   @relation(fields: [userId], references: [id])
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, jobId])
 }
 
 enum JobLevel {
   INTERN
   ENTRY
   MID_SENIOR
+  STAFF
   DIRECTOR
   EXECUTIVE
   UNKNOWN

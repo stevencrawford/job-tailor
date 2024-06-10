@@ -19,6 +19,25 @@ async function main() {
     skipDuplicates: true,
   });
 
+  // Create search criteria
+  await prisma.SearchCriteria.createMany({
+    data: [
+      {
+        jobCategory: 'Full-Stack Engineer',
+        jobLevel: 'MID_SENIOR',
+        region: 'Remote',
+        userId: '3C7AEA76-64D6-4845-BBB8-F1C1A702C9CD',
+      },
+      {
+        jobCategory: 'Frontend Engineering',
+        jobLevel: 'ENTRY',
+        region: 'Worldwide',
+        userId: '758A55EE-3484-4C58-8024-86C66D99B947',
+      },
+    ],
+  });
+
+
   // Create Connectors
   await prisma.Connector.createMany({
     data: [
@@ -72,27 +91,6 @@ async function main() {
         urlPattern: 'remoteok.com',
         config: '{}',
         connectorId: '4BA5D262-FB96-41FC-8CB6-B0F0C3CE541C,',
-      },
-    ],
-    skipDuplicates: true,
-  });
-
-  // Create UserConnectorConfigs
-  await prisma.UserConnectorConfig.createMany({
-    data: [
-      {
-        userId: '3C7AEA76-64D6-4845-BBB8-F1C1A702C9CD',
-        connectorId: '47A96FD0-3B2E-4C7F-A9D3-E5C0E547D44B',
-        searchTerms: 'software engineer',
-        location: 'Remote',
-        level: 'MID_SENIOR',
-      },
-      {
-        userId: '758A55EE-3484-4C58-8024-86C66D99B947',
-        connectorId: '17A414E4-4CA3-4733-8B28-7053E50E029E',
-        searchTerms: 'frontend developer',
-        location: 'USA',
-        level: 'ENTRY',
       },
     ],
     skipDuplicates: true,

@@ -37,34 +37,21 @@ export class WebCollectorService {
       throw new Error(`Connector "${connector}" is not supported.`);
     }
 
-    // 2. Find all UserConnectorConfigs with the selector connector
-    const connectorConfigs = await this._prismaService.userConnectorConfig.findMany({
-      where: {
-        connector: {
-          name: connector,
-        },
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+    // 2. Find all User.SearchCriteria
+    const searchCriteria = await this._prismaService.searchCriteria.findMany();
 
-    // 3. Build URLs for each User based on the UserConnectorConfigs
-    const sources: Source[] = connectorConfigs.map(config => {
-      const { searchTerms, location, level } = config;
-      const url = handler.searchUrl({ searchTerms, location, level });
-      return {
+    // 3. Iterate through the searchCriteria and build unique set of urls.
+    const uniqueConnectorUrls: Set<string> = new Set(searchCriteria.map(config => {
+      const { jobCategory, region, jobLevel } = config;
+      return handler.searchUrl({ jobCategory, jobLevel, region });
+    }));
+
+    const sources: Source[] = [];
+    uniqueConnectorUrls.forEach(url => {
+      sources.push({
         url,
         label: 'LIST',
-        userData: {
-          userId: config.user.id,
-        },
-      };
+      });
     });
 
     // 4. Crawl all the URLs for a given connector

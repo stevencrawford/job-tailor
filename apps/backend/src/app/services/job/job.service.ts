@@ -34,7 +34,6 @@ export class JobService {
       untracked.map(async (job) => {
         const createdJob = await this._prismaService.job.create({
           data: {
-            userId,
             source,
             ...job,
           },
@@ -73,7 +72,7 @@ export class JobService {
 
     // 6. Track to avoid revisiting
     await Promise.all(jobs.map(job => {
-      this._redis.sadd(`seen:${userId}:${source}`, job.url);
+      this._redis.sadd(`seen:${source}`, job.url);
     }));
 
     // 7. Update connector last successful run

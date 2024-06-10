@@ -10,8 +10,8 @@
     "docker:down": "find docker -name \"docker-compose.yml\" -print0 | xargs -0 -I {} sh -c \"cd \\$(dirname {}) && docker-compose down\"",
     "prisma:generate": "prisma generate",
     "prisma:gui": "prisma studio",
-    "prisma:migrate": "prisma migrate deploy",
-    "prisma:push": "prisma db push",
+    "prisma:migrate": "prisma migrate deploy && nx reset",
+    "prisma:push": "prisma db push && nx reset",
     "prisma:seed": "prisma db seed"
   },
   "private": true,

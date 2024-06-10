@@ -15,9 +15,10 @@ export enum JobLevel {
   INTERN = 'INTERN',
   ENTRY = 'ENTRY',
   MID_SENIOR = 'MID_SENIOR',
+  STAFF = 'STAFF',
   DIRECTOR = 'DIRECTOR',
   EXECUTIVE = 'EXECUTIVE',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum JobCategory {

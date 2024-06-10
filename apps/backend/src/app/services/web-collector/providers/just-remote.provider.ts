@@ -5,7 +5,7 @@ import { PaginatedWebProvider } from './paginated-web.provider';
 import { HandlerConfig, handlerConfigSchema } from '../web-collector.interface';
 import justRemoteConfigJson from '../config/justremote.config.json';
 import { RobotsFile } from 'crawlee';
-import { optionalLocator } from '../utils/playwright.utils';
+import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 
 @Injectable()
 export class JustRemoteWebProvider extends PaginatedWebProvider {
@@ -22,20 +22,22 @@ export class JustRemoteWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/remote-developer-jobs`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]> {
+  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
     const jobRows = await page.locator('div[class*="new-job-item__JobInnerWrapper"]').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>> => {
+      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>> => {
         const link = row.locator('a[class*="new-job-item__JobMeta"]');
-        const title = await row.locator('h3[class*="new-job-item__JobTitle"]').textContent();
+        const title = await optionalLocator(row, 'h3[class*="new-job-item__JobTitle"]', TRIM_TRANSFORMER);
+        const company = await optionalLocator(row, 'div[class*="new-job-item__JobItemCompany"]', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'div[class*="new-job-item__JobItemDate"]', DAY_MONTH_TRANSFORMER);
         return {
-          title: title.trim(),
+          title,
           url: new URL(`https://${this._identifier}/${await link.getAttribute('href')}`).toString(),
+          company,
           timestamp,
         };
       }),
@@ -57,7 +59,7 @@ export class JustRemoteWebProvider extends PaginatedWebProvider {
 
 const monthNames = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
 const DAY_MONTH_TRANSFORMER = async (element: Locator): Promise<number> => {
@@ -82,4 +84,4 @@ const DAY_MONTH_TRANSFORMER = async (element: Locator): Promise<number> => {
 const DESCRIPTION_TRANSFORMER = async (element: Locator) => {
   const paragraphs = await element.locator('p.md-block-unstyled').allTextContents();
   return paragraphs.join('\n');
-}
+};

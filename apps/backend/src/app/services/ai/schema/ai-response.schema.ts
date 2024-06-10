@@ -39,6 +39,7 @@ export const categorizedJobSchema = z.object({
     JobLevel.INTERN,
     JobLevel.ENTRY,
     JobLevel.MID_SENIOR,
+    JobLevel.STAFF,
     JobLevel.DIRECTOR,
     JobLevel.EXECUTIVE,
     JobLevel.UNKNOWN

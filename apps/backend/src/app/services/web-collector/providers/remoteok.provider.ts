@@ -4,7 +4,7 @@ import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
 import { RawJob } from '../../job/job.interface';
 import { RobotsFile } from 'crawlee';
-import { DATETIME_TRANSFORMER, optionalLocator } from '../utils/playwright.utils';
+import { DATETIME_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 
 @Injectable()
 export class RemoteOkWebProvider extends PaginatedWebProvider {
@@ -31,20 +31,22 @@ export class RemoteOkWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/remote-engineer-jobs?location=Worldwide,region_EU&order_by=date`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]> {
+  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
     const jobRows = await page.locator('tr.job').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>> => {
+      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>> => {
         const link = row.locator('a[itemprop="url"]');
-        const title = await row.locator('a[itemprop="url"] > h2').textContent();
+        const title = await optionalLocator(row, 'a[itemprop="url"] > h2', TRIM_TRANSFORMER);
+        const company = await optionalLocator(row,'span[itemprop="hiringOrganization"] > h3', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'td.time > time', DATETIME_TRANSFORMER);
         return {
-          title: title.trim(),
+          title,
           url: new URL(`https://${this._identifier}${await link.getAttribute('href')}`).toString(),
+          company,
           timestamp,
         };
       }),

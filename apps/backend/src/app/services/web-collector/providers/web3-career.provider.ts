@@ -22,19 +22,20 @@ export class Web3CareerWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/remote-jobs`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]> {
+  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
     const jobRows = await page.locator('table > tbody > tr.table_row:not(.border-paid-table)').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>> => {
+      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>> => {
         const link = row.locator('.job-title-mobile > a');
         const timestamp = await optionalLocator(row, 'time', DATETIME_TRANSFORMER);
         return {
           title: (await link.textContent()).trim(),
           url: new URL(`https://${this._identifier}${await link.getAttribute('href')}`).toString(),
+          company: await optionalLocator(row, 'h3'),
           timestamp,
         };
       }),

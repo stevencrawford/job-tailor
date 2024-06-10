@@ -1,4 +1,4 @@
-import { WebProvider, HandlerConfig, JobDispatcher } from '../web-collector.interface';
+import { HandlerConfig, JobDispatcher, WebProvider } from '../web-collector.interface';
 import { defaultCrawlerOptions } from '../web-collector.defaults';
 import { PlaywrightCrawler, RobotsFile } from 'crawlee';
 import { RawJob } from '../../job/job.interface';
@@ -68,9 +68,9 @@ export abstract class PaginatedWebProvider implements WebProvider {
     });
   }
 
-  abstract searchUrl(options: { searchTerms: string; location?: string; level: string }): string;
+  abstract searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string;
 
-  abstract getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]>;
+  abstract getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]>;
 
   abstract getDetailPageContent(page: Page): Promise<Partial<RawJob>>;
 }

@@ -94,7 +94,11 @@ An example response would be:
     ...
   ]
 }
-Given a list of jobs: ID|TITLE|URL
+Your choices for category and level are (Only use these values):
+Categories: [${Object.values(JobCategory).join(',')}]
+Levels: [${Object.values(JobLevel).join(',')}]
+
+List of jobs: ID|TITLE|URL
 ---
 ${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
 `;
@@ -102,11 +106,7 @@ ${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
       messages: [
         {
           role: 'assistant',
-          content: `You are a recruitment advisor who summarizes Job titles into category and level. 
-Your choices for category and level are:
-Categories: ${Object.values(JobCategory).join(',')}
-Levels: ${Object.values(JobLevel).join(',')}
-It is very important that you only create output using these values.`,
+          content: `You summarize job titles into category and level.`
         },
         {
           role: 'user',

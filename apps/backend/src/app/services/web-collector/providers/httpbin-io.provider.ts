@@ -28,11 +28,11 @@ export class HttpBinWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/user-agent`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp'>[]> {
+  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
     // Since this is a demo handler, we can return an empty array
     return [];
   }

@@ -5,7 +5,7 @@ import { z } from 'zod';
 export interface WebProvider {
   _identifier: string;
 
-  searchUrl(options: {searchTerms: string, location?: string, level: string }): string;
+  searchUrl(options: {jobCategory: string, jobLevel: string, region?: string }): string;
 
   supports(url: string): boolean;
 

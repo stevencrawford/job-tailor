@@ -21,11 +21,11 @@ export class JobService {
 
   async processAll(userId: string,
                    source: string,
-                   jobs: Pick<RawJob, 'title' | 'url' | 'timestamp'>[],
+                   jobs: Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[],
   ) {
     // 1. Filter out already seen by user
-    const untracked: Pick<RawJob, 'title' | 'url' | 'timestamp'>[] = await asyncFilter(jobs, async (job: Pick<RawJob, 'url'>): Promise<boolean> =>
-      !(await this._redis.sismember(`seen:${userId}:${source}`, job.url) === 1),
+    const untracked: Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[] = await asyncFilter(jobs, async (job: Pick<RawJob, 'url'>): Promise<boolean> =>
+      !(await this._redis.sismember(`seen:${source}`, job.url) === 1),
     );
     this._logger.log(`[${source}] Untracked ${untracked.length} jobs.`);
 

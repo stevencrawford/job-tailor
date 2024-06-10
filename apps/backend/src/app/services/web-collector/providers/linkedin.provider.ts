@@ -26,7 +26,7 @@ export class LinkedinWebProvider implements WebProvider {
     return domain.includes(this._identifier);
   }
 
-  searchUrl(options: { searchTerms: string; location?: string; level: string }): string {
+  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return '';
   }
 

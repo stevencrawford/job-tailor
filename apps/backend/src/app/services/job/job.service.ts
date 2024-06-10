@@ -66,16 +66,12 @@ export class JobService {
       }),
     );
 
-    // // 5. Filter to only job where decision == APPLY
-    // const apply = categorized.results?.filter(value => value.decision == AI_DECISION.APPLY);
-    // this._logger.log(`[${source}] Found ${apply.length} jobs to apply to.`);
-
-    // 6. Track to avoid revisiting
+    // 5. Track to avoid revisiting
     await Promise.all(jobs.map(job => {
       this._redis.sadd(`seen:${source}`, job.url);
     }));
 
-    // 7. Update connector last successful run
+    // 6. Update connector last successful run
     await this._prismaService.connector.update({
       where: {
         name: source
@@ -88,14 +84,17 @@ export class JobService {
     return categorized.results;
   }
 
-  async classifyJob(job: RawJob & { id: string }) {
-    const classifiedJob = await this._aiProviderFactory.get('groq').classifyJob(job);
-    await this._prismaService.job.update({
-      where: {
-        id: job.id,
-      },
+  async summarizeJob(job: Pick<RawJob, 'description'> & { id: string }) {
+    const summarizedJob = await this._aiProviderFactory.get('groq').summarizeJob(job);
+    await this._prismaService.jobSummary.create({
       data: {
-        ...classifiedJob,
+        jobId: job.id,
+        // ...summarizedJob, // TODO: need to enable strict null to fix this, I think!
+        experienceRequirements: summarizedJob.experienceRequirements,
+        responsibilities: summarizedJob.responsibilities,
+        interviewProcess: summarizedJob.interviewProcess,
+        technicalStack: summarizedJob.technicalStack,
+        aiProvider: 'GROQ' //summarizedJob.aiProvider.toUpperCase()
       },
     });
   }

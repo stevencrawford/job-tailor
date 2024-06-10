@@ -49,3 +49,10 @@ export const categorizedJobSchema = z.object({
 export const categorizeResponseSchema = z.object({
   results: z.array(categorizedJobSchema),
 });
+
+export const summarizeJobSchema = z.object({
+  responsibilities: z.string(),
+  experienceRequirements: z.string(),
+  technicalStack: z.string(),
+  interviewProcess: z.string().optional(),
+});

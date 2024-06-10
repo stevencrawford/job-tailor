@@ -23,15 +23,15 @@ export class JobsQueueListener {
 
   @EventPattern(RAW_JOB_LIST_FILTER, Transport.REDIS)
   async processJobs(data: { connector: string, userId: string, jobs: Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[] }) {
-    const apply = await this._jobService.processAll(data.userId, data.connector, data.jobs);
-    // if (apply.length > 0) {
-    //   await this._webCollectorService.crawlAll(data.connector, apply);
-    // }
+    const processed = await this._jobService.processAll(data.userId, data.connector, data.jobs);
+    if (processed.length > 0) {
+      await this._webCollectorService.crawlAll(data.connector, processed);
+    }
   }
 
   @EventPattern(RAW_JOB_DETAILS, Transport.REDIS)
   async processJob(data: { job: RawJob & { id: string } }) {
-    await this._jobService.classifyJob(data.job);
+    await this._jobService.summarizeJob(data.job);
   }
 
 }

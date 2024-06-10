@@ -77,6 +77,9 @@ model Job {
   company      String?
   timestamp    BigInt
 
+  // summary field
+  summary JobSummary?
+
   // connector fields
   connector Connector? @relation(fields: [source], references: [name])
 
@@ -85,6 +88,21 @@ model Job {
 
   // user fields
   JobMatch JobMatch[]
+}
+
+model JobSummary {
+  id                     String     @id @default(uuid())
+  responsibilities       String
+  experienceRequirements String
+  technicalStack         String
+  interviewProcess       String
+  aiProvider             AIProvider
+
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model JobMatch {
@@ -125,4 +143,9 @@ enum Decision {
   CONSIDER
   APPLY
   IGNORE
+}
+
+enum AIProvider {
+  GROQ
+  OPEN_AI
 }

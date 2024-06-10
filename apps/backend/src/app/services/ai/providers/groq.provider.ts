@@ -2,9 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JobCategory, JobLevel, RawJob } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../../utils/json.util';
-import { AIProvider, CategorizedJob, Classification } from '../ai-provider.interface';
+import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../ai-provider.interface';
 import Groq from 'groq-sdk';
-import { categorizeResponseSchema, CLASSIFIED_TYPE, classifyResponseSchema } from '../schema/ai-response.schema';
+import {
+  categorizeResponseSchema,
+  CLASSIFIED_TYPE,
+  classifyResponseSchema,
+  summarizeJobSchema,
+} from '../schema/ai-response.schema';
 import { ASSISTANT_MESSAGE } from '../ai-provider.constants';
 import { SupportProviders } from '../ai-provider.factory';
 
@@ -106,7 +111,7 @@ ${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
       messages: [
         {
           role: 'assistant',
-          content: `You summarize job titles into category and level.`
+          content: `You summarize job titles into category and level.`,
         },
         {
           role: 'user',
@@ -130,6 +135,49 @@ ${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
     const res = parseJSON(content);
     this._logger.log(`Groq produced output: ${JSON.stringify(res)}`);
     return categorizeResponseSchema.parse(res);
+  }
+
+  async summarizeJob(job: Pick<RawJob, 'description'>): Promise<SummarizedJob & { aiProvider: string }> {
+    const message = `Return a JSON { "responsibilities": string, "experienceRequirements": string, "technicalStack": string, "interviewProcess": string }
+Job Description:
+---
+${job.description}
+`;
+    const response = await this._groq.chat.completions.create({
+      messages: [
+        {
+          role: 'assistant',
+          content: `Given a complete job description, extract the relevant information. Each field has max length of 500 characters so summarize when necessary.
+Rules:
+technicalStack: If the job is not technical leave blank. Otherwise pick out at most 8 keys skills/technologies based on importance.
+interviewProcess: If the job does not state an interview process leave blank. Otherwise, summarize the process.
+`,
+        },
+        {
+          role: 'user',
+          content: message,
+        },
+      ],
+      n: 1,
+      temperature: 0.8,
+      model: GROQ_MODEL_LLAMA3_70B,
+      response_format: {
+        type: 'json_object',
+      },
+    });
+
+    const content = response.choices[0].message.content;
+
+    if (!content) {
+      throw new Error(`Groq was unable to process the request.`);
+    }
+
+    const res = parseJSON(content);
+    this._logger.log(`Groq produced output: ${JSON.stringify(res)}`);
+    return {
+      aiProvider: this.identifier,
+      ...summarizeJobSchema.parse(res),
+    };
   }
 
 }

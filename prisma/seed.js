@@ -44,57 +44,41 @@ async function main() {
       {
         id: '47A96FD0-3B2E-4C7F-A9D3-E5C0E547D44B',
         name: 'arc.dev',
-        host: 'arc.dev',
-        status: 'ONLINE',
+        type: 'WEB',
+        frequency: 'EVERY_DAY',
+        config: {},
+        status: 'OFFLINE',
       },
       {
         id: '17A414E4-4CA3-4733-8B28-7053E50E029E',
         name: 'justremote.co',
-        host: 'justremote.co',
-        status: 'ONLINE',
+        type: 'WEB',
+        frequency: 'EVERY_DAY',
+        config: {},
+        status: 'OFFLINE',
       },
       {
         id: 'D82E4D7C-A3D6-4732-AD28-85367521504E',
         name: 'web3.career',
-        host: 'web3.career',
+        type: 'WEB',
+        frequency: 'EVERY_6_HOURS',
+        config: {},
         status: 'ONLINE',
       },
       {
-        id: '4BA5D262-FB96-41FC-8CB6-B0F0C3CE541C,',
-        name: 'remoteok.com',
-        host: 'remoteok.com',
+        id: '34B6A056-6BC1-4192-B955-928D26C5B79D',
+        name: 'weworkremotely.com',
+        type: 'RSS',
+        frequency: 'EVERY_DAY',
+        config: {
+          url: 'https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss'
+        },
         status: 'ONLINE',
       },
     ],
     skipDuplicates: true,
   });
 
-  // Create PageSelectors
-  await prisma.PageSelector.createMany({
-    data: [
-      {
-        urlPattern: 'arc.dev',
-        config: '{}',
-        connectorId: '47A96FD0-3B2E-4C7F-A9D3-E5C0E547D44B',
-      },
-      {
-        urlPattern: 'justremote.co',
-        config: '{}',
-        connectorId: '17A414E4-4CA3-4733-8B28-7053E50E029E',
-      },
-      {
-        urlPattern: 'web3.career',
-        config: '{}',
-        connectorId: 'D82E4D7C-A3D6-4732-AD28-85367521504E',
-      },
-      {
-        urlPattern: 'remoteok.com',
-        config: '{}',
-        connectorId: '4BA5D262-FB96-41FC-8CB6-B0F0C3CE541C,',
-      },
-    ],
-    skipDuplicates: true,
-  });
 }
 
 main()

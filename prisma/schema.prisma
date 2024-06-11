@@ -36,27 +36,20 @@ model SearchCriteria {
 }
 
 model Connector {
-  id           String          @id @default(uuid())
-  name         String          @unique
-  host         String
-  lastSuccess  DateTime?
-  status       ConnectorStatus
-  healthStatus Boolean         @default(true)
+  id        String             @id @default(uuid())
+  name      String             @unique
+  config    Json
+  type      ConnectorType
+  frequency ConnectorFrequency
 
-  pageSelectors PageSelector[]
-  Job           Job[]
+  lastSuccess DateTime?
+  lastRun     DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  status  ConnectorStatus
+  healthy Boolean         @default(true)
+  error   String?
 
-model PageSelector {
-  id         String @id @default(uuid())
-  urlPattern String
-  config     Json
-
-  connectorId String
-  connector   Connector @relation(fields: [connectorId], references: [id])
+  Job Job[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,6 +114,19 @@ model JobMatch {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, jobId])
+}
+
+enum ConnectorType {
+  WEB
+  RSS
+  API
+  CHROME_EXTENSION
+}
+
+enum ConnectorFrequency {
+  EVERY_6_HOURS
+  EVERY_HOUR
+  EVERY_DAY
 }
 
 enum JobLevel {

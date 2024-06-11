@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@songkeys/nestjs-redis';
-import { BullMqModule } from '@libs/nestjs-libraries/bull-mq-transport/bull-mq.module';
 import { AIModule } from './app/services/ai/ai.module';
-import { WebCollectorModule } from './app/services/web-collector/web-collector.module';
-import { ApiCollectorModule } from './app/services/api-collector/api-collector.module';
 import { configSchema } from './app/configuration/config.schema';
 import config, { Config, RedisConfig } from './app/configuration/config';
-import { PrismaModule } from './app/services/prisma/prisma.module';
 import { JobModule } from './app/services/job/job.module';
 import { CronService } from './app/services/cron.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { EventsModule } from './app/events/events.module';
 import { ApiModule } from './app/api/api.module';
+import { DataCollectorModule } from './app/services/data-collector/data-collector.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -22,7 +19,7 @@ import { ApiModule } from './app/api/api.module';
       load: [config],
       validate: (env) => configSchema.parse(env),
     }),
-    BullMqModule.forRootAsync({
+    BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<Config>) => {
         const redisConfig = configService.getOrThrow<RedisConfig>('redis');
@@ -50,11 +47,8 @@ import { ApiModule } from './app/api/api.module';
       },
     }),
     ScheduleModule.forRoot(),
-    EventsModule,
-    WebCollectorModule,
-    ApiCollectorModule,
+    DataCollectorModule,
     JobModule,
-    PrismaModule,
     AIModule,
     ApiModule,
   ],

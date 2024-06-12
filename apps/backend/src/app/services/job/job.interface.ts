@@ -1,15 +1,21 @@
-export interface RawJob {
+
+export interface JobAttributesRequired {
   url: string;
   source: string;
-  location: string;
-  length: string;
-  roleType: string;
   title: string;
-  compensation: string;
   company: string;
-  description: string;
   timestamp: number;
 }
+
+export interface JobAttributesOptional {
+  location?: string;
+  length?: string;
+  roleType?: string;
+  description?: string;
+  compensation?: string;
+}
+
+export interface JobAttributes extends JobAttributesRequired, JobAttributesOptional {}
 
 export enum JobLevel {
   INTERN = 'INTERN',

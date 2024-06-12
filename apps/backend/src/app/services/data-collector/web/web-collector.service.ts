@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ProviderFactory } from './provider.factory';
-import { JobDispatcher } from './provider.interface';
+import { ProviderFactory } from './providers/provider.factory';
+import { JobDispatcher } from './web-collector.interface';
 import { Dictionary, Source } from 'crawlee';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IDataCollectorConfig, IDataCollectorService } from '../data-collector.interface';
@@ -16,11 +16,11 @@ export class WebCollectorService implements IDataCollectorService {
   constructor(
     private readonly _crawlerHandlerFactory: ProviderFactory,
     private readonly _prismaService: PrismaService,
-    @InjectQueue('data-collector.web.job') private readonly _dataCollectorQueue: Queue<{ collectorConfig: IDataCollectorConfig, jobListing: Dictionary }>,
+    @InjectQueue('data-collector.job') private readonly _dataCollectorJobQueue: Queue<{ collectorConfig: IDataCollectorConfig, jobListing: Dictionary }>,
   ) {
     this._bullQueueDispatcher = {
       dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: Dictionary[] }) => {
-        await this._dataCollectorQueue.addBulk(payload.jobListings.map((jobListing) => {
+        await this._dataCollectorJobQueue.addBulk(payload.jobListings.map((jobListing) => {
           return {
             name: `web-collector-${payload.collectorConfig.name}`,
             data: {

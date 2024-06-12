@@ -1,16 +1,16 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { IDataCollectorConfig } from './data-collector.interface';
-import { WebCollectorService } from './web/web-collector.service';
-import { UnknownCollectorError } from './errors/data-collector.error';
-import { DataCollectorService } from './data-collector.service';
-import { RSSCollectorService } from './rss/rss-collector.service';
+import { IDataCollectorConfig } from '../data-collector.interface';
+import { WebCollectorService } from '../web/web-collector.service';
+import { UnknownCollectorError } from '../errors/data-collector.error';
+import { DataCollectorService } from '../data-collector.service';
+import { RSSCollectorService } from '../rss/rss-collector.service';
 
 @Injectable()
 @Processor('data-collector.fetch', { concurrency: 1 })
-export class DataCollectorProcessor extends WorkerHost {
-  readonly _logger = new Logger(DataCollectorProcessor.name);
+export class DataCollectorFetchProcessor extends WorkerHost {
+  readonly _logger = new Logger(DataCollectorFetchProcessor.name);
 
   constructor(
     private readonly _webCollectorService: WebCollectorService,

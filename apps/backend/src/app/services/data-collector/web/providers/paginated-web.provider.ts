@@ -1,11 +1,11 @@
-import { JobDispatcher, WebCollectorConfig, WebProvider } from '../provider.interface';
-import { defaultCrawlerOptions } from '../provider.defaults';
-import { Dictionary, PlaywrightCrawler, RobotsFile } from 'crawlee';
-import { RawJob } from '../../../job/job.interface';
+import { JobDispatcher, WebCollectorConfig, WebProvider } from '../web-collector.interface';
+import { defaultCrawlerOptions } from './provider.defaults';
+import { PlaywrightCrawler, RobotsFile } from 'crawlee';
 import { timestampDiff } from '../../../../utils/date.utils';
 import { Page } from '@playwright/test';
 import { Logger } from '@nestjs/common';
 import { IDataCollectorConfig } from '../../data-collector.interface';
+import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
 
 export abstract class PaginatedWebProvider implements WebProvider {
   readonly _logger = new Logger(this.constructor.name);
@@ -31,7 +31,7 @@ export abstract class PaginatedWebProvider implements WebProvider {
             ...request.userData['jobListing'],
             url: request.url,
             ...(await this.getDetailPageContent(page)),
-          } as RawJob;
+          } as JobAttributes;
 
           dispatcher.dispatch({
             collectorConfig,
@@ -43,7 +43,7 @@ export abstract class PaginatedWebProvider implements WebProvider {
             return Math.min(prev, curr.timestamp) ? prev : curr.timestamp;
           }, 0);
 
-          const jobsToProcess = jobs.filter((job: Pick<Dictionary, 'url' | 'timestamp'>) => {
+          const jobsToProcess = jobs.filter((job: Pick<JobAttributesRequired, 'url' | 'timestamp'>) => {
             const isAllowed = this._robotsFile.isAllowed(job.url);
             const isStale = timestampDiff(job.timestamp, this._config.staleJobThreshold.unit) > this._config.staleJobThreshold.value;
             return isAllowed && !isStale;
@@ -72,7 +72,7 @@ export abstract class PaginatedWebProvider implements WebProvider {
 
   abstract searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string;
 
-  abstract getListPageContent(page: Page): Promise<Dictionary[]>;
+  abstract getListPageContent(page: Page): Promise<JobAttributesRequired[]>;
 
-  abstract getDetailPageContent(page: Page): Promise<Dictionary>;
+  abstract getDetailPageContent(page: Page): Promise<JobAttributesOptional>;
 }

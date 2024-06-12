@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig } from '../provider.interface';
+import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
-import { RawJob } from '../../../job/job.interface';
 import { RobotsFile } from 'crawlee';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
 
 @Injectable()
 export class HttpBinWebProvider extends PaginatedWebProvider {
@@ -32,12 +32,12 @@ export class HttpBinWebProvider extends PaginatedWebProvider {
     return `https://${this._identifier}/user-agent`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
+  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
     // Since this is a demo handler, we can return an empty array
     return [];
   }
 
-  async getDetailPageContent(page: Page): Promise<Partial<RawJob>> {
+  async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     // Since this is a demo handler, we can return an empty object
     return {};
   }

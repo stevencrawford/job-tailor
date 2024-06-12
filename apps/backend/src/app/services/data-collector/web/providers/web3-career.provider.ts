@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig, webConfigSchema } from '../provider.interface';
-import { RawJob } from '../../../job/job.interface';
+import { WebCollectorConfig, webConfigSchema } from '../web-collector.interface';
 import { DATETIME_TRANSFORMER, optionalLocator } from '../utils/playwright.utils';
 import { Page } from '@playwright/test';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import web3CareerConfigJson from '../config/web3-career.config.json';
-import { Dictionary, RobotsFile } from 'crawlee';
+import { RobotsFile } from 'crawlee';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
 
 @Injectable()
 export class Web3CareerWebProvider extends PaginatedWebProvider {
@@ -26,13 +26,14 @@ export class Web3CareerWebProvider extends PaginatedWebProvider {
     return `https://${this._identifier}/remote-jobs`;
   }
 
-  async getListPageContent(page: Page): Promise<Dictionary[]> {
+  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
     const jobRows = await page.locator('table > tbody > tr.table_row:not(.border-paid-table)').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Dictionary> => {
+      jobRows.map(async (row): Promise<JobAttributesRequired> => {
         const link = row.locator('.job-title-mobile > a');
         const timestamp = await optionalLocator(row, 'time', DATETIME_TRANSFORMER);
         return {
+          source: this._identifier,
           title: (await link.textContent()).trim(),
           url: new URL(`https://${this._identifier}${await link.getAttribute('href')}`).toString(),
           company: await optionalLocator(row, 'h3'),
@@ -42,9 +43,8 @@ export class Web3CareerWebProvider extends PaginatedWebProvider {
     );
   }
 
-  async getDetailPageContent(page: Page): Promise<Dictionary> {
+  async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
-      company: await optionalLocator(page, this._config.selectors.company),
       compensation: await optionalLocator(page, this._config.selectors.compensation),
       location: await optionalLocator(page, this._config.selectors.location),
       length: await optionalLocator(page, this._config.selectors.length),

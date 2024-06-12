@@ -5,19 +5,18 @@ import { Web3CareerWebProvider } from './providers/web3-career.provider';
 import { JustRemoteWebProvider } from './providers/just-remote.provider';
 import { ArcDevWebProvider } from './providers/arc-dev.provider';
 import { RemoteOkWebProvider } from './providers/remoteok.provider';
-import { ProviderFactory } from './provider.factory';
-import { WebProvider } from './provider.interface';
+import { ProviderFactory } from './providers/provider.factory';
+import { WebProvider } from './web-collector.interface';
 import { WebCollectorService } from './web-collector.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { BullModule } from '@nestjs/bullmq';
 import { defaultJobOptions } from '../../common/default-jobs-options';
-import { WebCollectorProcessor } from './web-collector.processor';
 
 @Module({
   imports: [
     PrismaModule,
     BullModule.registerQueue({
-      name: 'data-collector.web.job',
+      name: 'data-collector.job',
       defaultJobOptions
     }),
   ],
@@ -44,7 +43,6 @@ import { WebCollectorProcessor } from './web-collector.processor';
       ],
     },
     WebCollectorService,
-    WebCollectorProcessor,
   ],
   exports: [WebCollectorService]
 })

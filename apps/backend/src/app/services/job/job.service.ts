@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RawJob } from './job.interface';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import { AIProviderFactory } from '../ai/ai-provider.factory';
 import Redis from 'ioredis';
 import { asyncFilter } from '../../utils/core.utils';
 import { CategorizedJob } from '../ai/ai-provider.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { JobAttributesOptional, JobAttributesRequired } from './job.interface';
 
 @Injectable()
 export class JobService {
@@ -21,10 +21,10 @@ export class JobService {
 
   async processAll(userId: string,
                    source: string,
-                   jobs: Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[],
+                   jobs: JobAttributesRequired[],
   ) {
     // 1. Filter out already seen by user
-    const untracked: Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[] = await asyncFilter(jobs, async (job: Pick<RawJob, 'url'>): Promise<boolean> =>
+    const untracked: JobAttributesRequired[] = await asyncFilter(jobs, async (job: Pick<JobAttributesRequired, 'url'>): Promise<boolean> =>
       !(await this._redis.sismember(`seen:${source}`, job.url) === 1),
     );
     this._logger.log(`[${source}] Untracked ${untracked.length} jobs.`);
@@ -52,7 +52,7 @@ export class JobService {
 
     // 4. Update categorization for all jobs
     await Promise.all(
-      categorized.results?.map(async (job: (Partial<RawJob> & { id: string } & CategorizedJob)) => {
+      categorized.results?.map(async (job: (JobAttributesRequired & { id: string } & CategorizedJob)) => {
         await this._prismaService.job.update({
           where: {
             id: job.id,
@@ -84,7 +84,7 @@ export class JobService {
     return categorized.results;
   }
 
-  async summarizeJob(job: Pick<RawJob, 'description'> & { id: string }) {
+  async summarizeJob(job: Pick<JobAttributesOptional, 'description'> & { id: string }) {
     const summarizedJob = await this._aiProviderFactory.get('groq').summarizeJob(job);
     await this._prismaService.jobSummary.create({
       data: {

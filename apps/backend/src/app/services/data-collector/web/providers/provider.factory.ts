@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { WebProvider, JobDispatcher } from './provider.interface';
+import { WebProvider, JobDispatcher } from '../web-collector.interface';
 import { PlaywrightCrawler } from 'crawlee';
 
 @Injectable()

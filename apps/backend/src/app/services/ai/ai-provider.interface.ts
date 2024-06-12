@@ -1,7 +1,7 @@
-import { RawJob } from '../job/job.interface';
 import { categorizedJobSchema, classifyResponseSchema, summarizeJobSchema } from './schema/ai-response.schema';
 import { z } from 'zod';
 import { SupportProviders } from './ai-provider.factory';
+import { JobAttributes, JobAttributesRequired } from '../job/job.interface';
 
 export type Classification = z.infer<typeof classifyResponseSchema>;
 export type CategorizedJob = z.infer<typeof categorizedJobSchema>;
@@ -10,14 +10,14 @@ export type SummarizedJob = z.infer<typeof summarizeJobSchema>;
 export interface AIProvider {
   identifier: SupportProviders;
 
-  classifyJob(job: RawJob): Promise<RawJob & Classification>;
+  classifyJob(job: JobAttributes): Promise<JobAttributes & Classification>;
 
   categorizeJobs(jobs: (
     { id: string }
-    & Pick<RawJob, 'title' | 'url' | 'location'>)[],
+    & Pick<JobAttributesRequired, 'title' | 'url'>)[],
   ): Promise<{ results?: CategorizedJob[] }>;
 
-  summarizeJob(job: Pick<RawJob, 'description'>): Promise<SummarizedJob & {
+  summarizeJob(job: Pick<JobAttributes, 'description'>): Promise<SummarizedJob & {
     aiProvider: string
   }>;
 }

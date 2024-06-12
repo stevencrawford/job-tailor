@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RawJob } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../ai-provider.interface';
 import { SupportProviders } from '../ai-provider.factory';
@@ -17,19 +17,19 @@ export class OpenAIProvider implements AIProvider {
     });
   }
 
-  async classifyJob(job: RawJob): Promise<RawJob & Classification> {
+  async classifyJob(job: JobAttributes): Promise<JobAttributes & Classification> {
     // TODO: implement me
     return Promise.reject();
   }
 
-  categorizeJobs(jobs: ({ id: string } & Pick<RawJob, "title" | "url" | "location">)[]): Promise<{
+  categorizeJobs(jobs: ({ id: string } & Pick<JobAttributesRequired, 'title' | 'url'>)[]): Promise<{
     results?: CategorizedJob[]
   }> {
     // TODO: implement me
     return Promise.reject();
   }
 
-  summarizeJob(job: { id: string } & Pick<RawJob, 'description'>): Promise<{ jobId: string } & SummarizedJob & {
+  summarizeJob(job: { id: string } & Pick<JobAttributes, 'description'>): Promise<{ jobId: string } & SummarizedJob & {
     aiProvider: string
   }> {
     // TODO: implement me

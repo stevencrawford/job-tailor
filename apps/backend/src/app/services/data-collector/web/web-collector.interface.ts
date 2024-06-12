@@ -1,6 +1,7 @@
-import { Dictionary, PlaywrightCrawler } from 'crawlee';
+import { PlaywrightCrawler } from 'crawlee';
 import { z } from 'zod';
 import { IDataCollectorConfig } from '../data-collector.interface';
+import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
 
 export interface WebProvider {
   _identifier: string;
@@ -13,13 +14,13 @@ export interface WebProvider {
 }
 
 export interface JobDispatcher {
-  dispatch(data: { collectorConfig: IDataCollectorConfig, jobListings: Dictionary[] }): void;
+  dispatch(data: { collectorConfig: IDataCollectorConfig, jobListings: (JobAttributesRequired | JobAttributes)[] }): void;
 }
 
 export const webConfigSchema = z.object({
   selectors: z.object({
     title: z.string(),
-    company: z.string().optional(),
+    company: z.string(),
     location: z.string().optional(),
     length: z.string().optional(),
     description: z.string(),

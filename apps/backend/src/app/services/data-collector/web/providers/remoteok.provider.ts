@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig } from '../provider.interface';
+import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
-import { RawJob } from '../../../job/job.interface';
 import { RobotsFile } from 'crawlee';
 import { DATETIME_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
 
 @Injectable()
 export class RemoteOkWebProvider extends PaginatedWebProvider {
@@ -35,15 +35,16 @@ export class RemoteOkWebProvider extends PaginatedWebProvider {
     return `https://${this._identifier}/remote-engineer-jobs?location=Worldwide,region_EU&order_by=date`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
+  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
     const jobRows = await page.locator('tr.job').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>> => {
+      jobRows.map(async (row): Promise<JobAttributesRequired> => {
         const link = row.locator('a[itemprop="url"]');
         const title = await optionalLocator(row, 'a[itemprop="url"] > h2', TRIM_TRANSFORMER);
         const company = await optionalLocator(row,'span[itemprop="hiringOrganization"] > h3', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'td.time > time', DATETIME_TRANSFORMER);
         return {
+          source: this._identifier,
           title,
           url: new URL(`https://${this._identifier}${await link.getAttribute('href')}`).toString(),
           company,
@@ -53,10 +54,8 @@ export class RemoteOkWebProvider extends PaginatedWebProvider {
     );
   }
 
-  async getDetailPageContent(page: Page): Promise<Partial<RawJob>> {
+  async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
-      title: await optionalLocator(page, this._config.selectors.title),
-      company: await optionalLocator(page, this._config.selectors.company),
       location: await optionalLocator(page, this._config.selectors.location),
       description: await optionalLocator(page, this._config.selectors.description),
     };

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { JobCategory, JobLevel, RawJob } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired, JobCategory, JobLevel } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../../utils/json.util';
 import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../ai-provider.interface';
@@ -29,7 +29,7 @@ export class GroqProvider implements AIProvider {
     });
   }
 
-  async classifyJob(job: RawJob): Promise<RawJob & Classification> {
+  async classifyJob(job: JobAttributes): Promise<JobAttributes & Classification> {
     const message = `Return a JSON { "score": number, "decision": "APPLY" | "CONSIDER" | "IGNORE", "reason": string? }.
 
 An example response would be:
@@ -84,7 +84,7 @@ ${job.description}
 
   async categorizeJobs(jobs: ({
     id: string
-  } & Pick<RawJob, 'title' | 'url' | 'location'>)[]): Promise<{ results?: CategorizedJob[] }> {
+  } & Pick<JobAttributesRequired, 'title' | 'url'>)[]): Promise<{ results?: CategorizedJob[] }> {
     const message = `Return a JSON array { "results": Array<{"id": string, "title": string, "url": string, "category": string, "level": string } }
 An example response would be:
 {
@@ -137,7 +137,7 @@ ${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
     return categorizeResponseSchema.parse(res);
   }
 
-  async summarizeJob(job: Pick<RawJob, 'description'>): Promise<SummarizedJob & { aiProvider: string }> {
+  async summarizeJob(job: Pick<JobAttributes, 'description'>): Promise<SummarizedJob & { aiProvider: string }> {
     const message = `Return a JSON { "responsibilities": string, "experienceRequirements": string, "technicalStack": string, "interviewProcess": string }
 Job Description:
 ---

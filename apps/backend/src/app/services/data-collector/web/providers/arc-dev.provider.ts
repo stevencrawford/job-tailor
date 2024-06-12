@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig } from '../provider.interface';
+import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Locator, Page } from '@playwright/test';
-import { RawJob } from '../../../job/job.interface';
 import { RobotsFile } from 'crawlee';
 import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 import { subDays, subHours, subMinutes, subMonths, subSeconds, subWeeks } from 'date-fns';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
 
 @Injectable()
 export class ArcDevWebProvider extends PaginatedWebProvider {
@@ -40,15 +40,16 @@ export class ArcDevWebProvider extends PaginatedWebProvider {
     return `https://${this._identifier}/remote-jobs?jobLevels=senior&jobTypes=fulltime&jobRoles=engineering&disciplines=back-end`;
   }
 
-  async getListPageContent(page: Page): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>[]> {
+  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
     const jobRows = await page.locator('div[class*="external-job-list"] >* div[class*="job-card"]').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<Pick<RawJob, 'title' | 'url' | 'timestamp' | 'company'>> => {
+      jobRows.map(async (row): Promise<JobAttributesRequired> => {
         const link = row.locator('a.job-title');
         const title = await optionalLocator(row, 'a.job-title', TRIM_TRANSFORMER);
         const company = await optionalLocator(row, 'a.company-name', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'div.additional-info > span', RELATIVE_DATE_TRANSFORMER);
         return {
+          source: this._identifier,
           title,
           url: new URL(`https://${this._identifier}/${await link.getAttribute('href')}`).toString(),
           company,
@@ -58,10 +59,8 @@ export class ArcDevWebProvider extends PaginatedWebProvider {
     );
   }
 
-  async getDetailPageContent(page: Page): Promise<Partial<RawJob>> {
+  async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
-      title: await optionalLocator(page, this._config.selectors.title),
-      company: await optionalLocator(page, this._config.selectors.company),
       location: await optionalLocator(page, this._config.selectors.location),
       length: await optionalLocator(page, this._config.selectors.length),
       description: await optionalLocator(page, this._config.selectors.description),

@@ -6,7 +6,7 @@ import { defaultJobOptions } from '../../common/default-jobs-options';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'data-collector.rss.job',
+      name: 'data-collector.job',
       defaultJobOptions
     }),
   ],

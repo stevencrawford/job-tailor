@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { WebProvider } from '../provider.interface';
-import { defaultCrawlerOptions } from '../provider.defaults';
+import { WebProvider } from '../web-collector.interface';
+import { defaultCrawlerOptions } from './provider.defaults';
 import { PlaywrightCrawler, RobotsFile, sleep } from 'crawlee';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';

@@ -5,7 +5,7 @@ import { Locator, Page } from '@playwright/test';
 import { RobotsFile } from 'crawlee';
 import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 import { subDays, subHours, subMinutes, subMonths, subSeconds, subWeeks } from 'date-fns';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 @Injectable()
 export class ArcDevWebProvider extends PaginatedWebProvider {

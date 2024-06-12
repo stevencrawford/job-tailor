@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JobService } from './job.service';
+import { JobCategorizeService } from './job-categorize.service';
 import { LlmModule } from '../llm/llm.module';
 import { PrismaModule } from '../prisma/prisma.module';
 
@@ -8,8 +8,8 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
     LlmModule
   ],
-  providers: [JobService],
-  exports: [JobService],
+  providers: [JobCategorizeService],
+  exports: [JobCategorizeService],
 })
-export class JobModule {
+export class JobCategorizeModule {
 }

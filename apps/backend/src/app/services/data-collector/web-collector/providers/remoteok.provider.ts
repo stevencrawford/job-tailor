@@ -4,7 +4,7 @@ import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
 import { RobotsFile } from 'crawlee';
 import { DATETIME_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 @Injectable()
 export class RemoteOkWebProvider extends PaginatedWebProvider {

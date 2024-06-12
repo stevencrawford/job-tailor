@@ -5,7 +5,7 @@ import { timestampDiff } from '../../../../utils/date.utils';
 import { Page } from '@playwright/test';
 import { Logger } from '@nestjs/common';
 import { IDataCollectorConfig } from '../../data-collector.interface';
-import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 export abstract class PaginatedWebProvider implements WebProvider {
   readonly _logger = new Logger(this.constructor.name);

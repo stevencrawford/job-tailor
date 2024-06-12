@@ -6,7 +6,7 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
-import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 
 @Injectable()
 @Processor('data-collector.job', { concurrency: 10 })

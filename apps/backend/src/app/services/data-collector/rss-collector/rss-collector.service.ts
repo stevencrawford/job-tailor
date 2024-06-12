@@ -4,7 +4,7 @@ import Parser from 'rss-parser';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { RssCollectorConfig, rssConfigSchema } from './rss-collector.interface';
-import { JobAttributes } from '../../job/job.interface';
+import { JobAttributes } from '../../interfaces/job.interface';
 
 @Injectable()
 export class RSSCollectorService implements IDataCollectorService{
@@ -25,7 +25,11 @@ export class RSSCollectorService implements IDataCollectorService{
     });
     const feed = await parser.parseURL(config.url);
 
-    await this._dataCollectorJobQueue.addBulk(feed.items.map((item) => {
+    await this._dataCollectorJobQueue.addBulk(feed.items
+      .filter((item) => {
+        // TODO: filter out jobs already seen in redis
+      })
+      .map((item) => {
       return {
         name: `rss-collector-${collectorConfig.name}`,
         data: {

@@ -3,7 +3,7 @@ import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
 import { RobotsFile } from 'crawlee';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 @Injectable()
 export class HttpBinWebProvider extends PaginatedWebProvider {

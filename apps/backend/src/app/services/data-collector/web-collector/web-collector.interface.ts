@@ -1,7 +1,7 @@
 import { PlaywrightCrawler } from 'crawlee';
 import { z } from 'zod';
 import { IDataCollectorConfig } from '../data-collector.interface';
-import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 
 export interface WebProvider {
   _identifier: string;

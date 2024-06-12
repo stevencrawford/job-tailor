@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { JobAttributes, JobAttributesRequired, JobCategory, JobLevel } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired, JobCategory, JobLevel } from '../../interfaces/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../../utils/json.util';
 import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../llm-provider.interface';

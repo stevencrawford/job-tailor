@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../llm-provider.interface';
 import { SupportProviders } from '../llm-provider.factory';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { JobLevel } from '../../job/job.interface';
+import { JobLevel } from '../../interfaces/job.interface';
 
 export enum AI_DECISION {
   UNKNOWN = 'UNKNOWN',

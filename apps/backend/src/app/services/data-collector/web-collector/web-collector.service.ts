@@ -20,7 +20,11 @@ export class WebCollectorService implements IDataCollectorService {
   ) {
     this._bullQueueDispatcher = {
       dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: Dictionary[] }) => {
-        await this._dataCollectorJobQueue.addBulk(payload.jobListings.map((jobListing) => {
+        await this._dataCollectorJobQueue.addBulk(payload.jobListings
+          .filter((jobListing) => {
+            // TODO: filter out jobs already seen in redis
+          })
+          .map((jobListing) => {
           return {
             name: `web-collector-${payload.collectorConfig.name}`,
             data: {

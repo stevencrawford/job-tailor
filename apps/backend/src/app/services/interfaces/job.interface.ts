@@ -17,6 +17,10 @@ export interface JobAttributesOptional {
 
 export interface JobAttributes extends JobAttributesRequired, JobAttributesOptional {}
 
+export interface JobWithId {
+  id: string;
+}
+
 export enum JobLevel {
   INTERN = 'INTERN',
   ENTRY = 'ENTRY',

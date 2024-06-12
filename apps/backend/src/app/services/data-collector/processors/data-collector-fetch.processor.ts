@@ -2,10 +2,10 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { IDataCollectorConfig } from '../data-collector.interface';
-import { WebCollectorService } from '../web/web-collector.service';
+import { WebCollectorService } from '../web-collector/web-collector.service';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
-import { RSSCollectorService } from '../rss/rss-collector.service';
+import { RSSCollectorService } from '../rss-collector/rss-collector.service';
 
 @Injectable()
 @Processor('data-collector.fetch', { concurrency: 1 })

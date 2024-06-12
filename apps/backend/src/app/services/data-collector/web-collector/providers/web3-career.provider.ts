@@ -5,7 +5,7 @@ import { Page } from '@playwright/test';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import web3CareerConfigJson from '../config/web3-career.config.json';
 import { RobotsFile } from 'crawlee';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 @Injectable()
 export class Web3CareerWebProvider extends PaginatedWebProvider {

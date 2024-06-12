@@ -5,7 +5,7 @@ import { WebCollectorConfig, webConfigSchema } from '../web-collector.interface'
 import justRemoteConfigJson from '../config/justremote.config.json';
 import { RobotsFile } from 'crawlee';
 import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../job/job.interface';
+import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
 
 @Injectable()
 export class JustRemoteWebProvider extends PaginatedWebProvider {

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRedis } from '@songkeys/nestjs-redis';
-import { AIProviderFactory } from '../ai/ai-provider.factory';
+import { LlmProviderFactory } from '../llm/llm-provider.factory';
 import Redis from 'ioredis';
 import { asyncFilter } from '../../utils/core.utils';
-import { CategorizedJob } from '../ai/ai-provider.interface';
+import { CategorizedJob } from '../llm/llm-provider.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { JobAttributesOptional, JobAttributesRequired } from './job.interface';
 
@@ -13,7 +13,7 @@ export class JobService {
 
   constructor(
     @InjectRedis() private readonly _redis: Redis,
-    private readonly _aiProviderFactory: AIProviderFactory,
+    private readonly _aiProviderFactory: LlmProviderFactory,
     private _prismaService: PrismaService,
   ) {
   }

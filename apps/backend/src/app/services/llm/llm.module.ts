@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { GroqProvider } from './providers/groq.provider';
 import { OpenAIProvider } from './providers/openai.provider';
-import { AIProviderFactory } from './ai-provider.factory';
-import { AIProvider } from './ai-provider.interface';
+import { LlmProviderFactory } from './llm-provider.factory';
+import { AIProvider } from './llm-provider.interface';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
   providers: [
     GroqProvider,
     OpenAIProvider,
-    AIProviderFactory,
+    LlmProviderFactory,
     {
       provide: 'AI_PROVIDERS',
       useFactory: (...providers: AIProvider[]) => {
@@ -22,6 +22,6 @@ import { ConfigModule } from '@nestjs/config';
       ],
     },
   ],
-  exports: [AIProviderFactory],
+  exports: [LlmProviderFactory],
 })
-export class AIModule {}
+export class LlmModule {}

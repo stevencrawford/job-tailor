@@ -2,16 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JobAttributes, JobAttributesRequired, JobCategory, JobLevel } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { parseJSON } from '../../../utils/json.util';
-import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../ai-provider.interface';
+import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../llm-provider.interface';
 import Groq from 'groq-sdk';
 import {
   categorizeResponseSchema,
   CLASSIFIED_TYPE,
   classifyResponseSchema,
   summarizeJobSchema,
-} from '../schema/ai-response.schema';
-import { ASSISTANT_MESSAGE } from '../ai-provider.constants';
-import { SupportProviders } from '../ai-provider.factory';
+} from '../schema/llm-response.schema';
+import { ASSISTANT_MESSAGE } from '../llm-provider.constants';
+import { SupportProviders } from '../llm-provider.factory';
 
 const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
 const GROQ_MODEL_LLAMA3_8B = 'llama3-8b-8192';

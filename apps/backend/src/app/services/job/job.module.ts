@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { JobService } from './job.service';
-import { AIModule } from '../ai/ai.module';
+import { LlmModule } from '../llm/llm.module';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
     PrismaModule,
-    AIModule
+    LlmModule
   ],
   providers: [JobService],
   exports: [JobService],

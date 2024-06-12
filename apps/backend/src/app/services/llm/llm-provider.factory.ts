@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AIProvider } from './ai-provider.interface';
+import { AIProvider } from './llm-provider.interface';
 
 export type SupportProviders = 'openai' | 'groq';
 
 @Injectable()
-export class AIProviderFactory {
+export class LlmProviderFactory {
   constructor(
     @Inject('AI_PROVIDERS') private readonly providers: AIProvider[],
   ) {}

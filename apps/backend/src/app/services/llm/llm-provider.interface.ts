@@ -1,6 +1,6 @@
-import { categorizedJobSchema, classifyResponseSchema, summarizeJobSchema } from './schema/ai-response.schema';
+import { categorizedJobSchema, classifyResponseSchema, summarizeJobSchema } from './schema/llm-response.schema';
 import { z } from 'zod';
-import { SupportProviders } from './ai-provider.factory';
+import { SupportProviders } from './llm-provider.factory';
 import { JobAttributes, JobAttributesRequired } from '../job/job.interface';
 
 export type Classification = z.infer<typeof classifyResponseSchema>;

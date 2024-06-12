@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@songkeys/nestjs-redis';
-import { AIModule } from './app/services/ai/ai.module';
+import { LlmModule } from './app/services/llm/llm.module';
 import { configSchema } from './app/configuration/config.schema';
 import config, { Config, RedisConfig } from './app/configuration/config';
 import { JobModule } from './app/services/job/job.module';
@@ -49,7 +49,7 @@ import { BullModule } from '@nestjs/bullmq';
     ScheduleModule.forRoot(),
     DataCollectorModule,
     JobModule,
-    AIModule,
+    LlmModule,
     ApiModule,
   ],
   controllers: [],

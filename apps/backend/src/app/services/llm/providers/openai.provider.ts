@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JobAttributes, JobAttributesRequired } from '../../job/job.interface';
 import { ConfigService } from '@nestjs/config';
-import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../ai-provider.interface';
-import { SupportProviders } from '../ai-provider.factory';
+import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../llm-provider.interface';
+import { SupportProviders } from '../llm-provider.factory';
 import OpenAI from 'openai';
 
 @Injectable()

@@ -86,6 +86,16 @@ async function main() {
         },
         status: 'ONLINE',
       },
+      {
+        id: 'FB2100AF-0560-4E51-B69F-165CF2118CD7',
+        name: 'remoteok.com',
+        type: 'API',
+        frequency: 'EVERY_DAY',
+        config: {
+          url: 'https://remoteok.com/api'
+        },
+        status: 'ONLINE',
+      },
     ],
     skipDuplicates: true,
   });

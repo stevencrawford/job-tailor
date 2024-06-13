@@ -2,11 +2,9 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { IDataCollectorConfig } from '../data-collector.interface';
-import { WebCollectorService } from '../web-collector/web-collector.service';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
-import { RssCollectorService } from '../rss-collector/rss-collector.service';
-import { ApiCollectorService } from '../api-collector/api-collector.service';
+import { DataCollectorFactory } from '../data-collector.factory';
 
 @Injectable()
 @Processor('data-collector.fetch', { concurrency: 1 })
@@ -14,9 +12,7 @@ export class DataCollectorFetchProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorFetchProcessor.name);
 
   constructor(
-    private readonly _webCollectorService: WebCollectorService,
-    private readonly _rssCollectorService: RssCollectorService,
-    private readonly _apiCollectorService: ApiCollectorService,
+    private readonly _collectorFactory: DataCollectorFactory,
     private readonly _dataCollectorService: DataCollectorService,
   ) {
     super();
@@ -52,22 +48,16 @@ export class DataCollectorFetchProcessor extends WorkerHost {
   }
 
   private async handleJob(job: Job<IDataCollectorConfig>): Promise<number> {
-    switch (job.data.type) {
-      case 'WEB':
-        return this._webCollectorService.fetchData(job.data);
-      case 'RSS':
-        return this._rssCollectorService.fetchData(job.data);
-      case 'API':
-        return this._apiCollectorService.fetchData(job.data);
-      default:
-        return Promise.reject(new Error(`Connector type ${job.data.type} not supported`));
+    const dataCollector = this._collectorFactory.get(job.data.type);
+    if (dataCollector) {
+        return dataCollector.fetchData(job.data);
     }
+    return Promise.reject(new Error(`Connector type ${job.data.type} not supported`));
   }
 
   @OnWorkerEvent('error')
   onError(err: Error): void {
-    this._logger.error('Error in worker');
-    console.error(err);
+    this._logger.error(`Error in worker: ${err.message}`);
   }
 
   @OnWorkerEvent('failed')

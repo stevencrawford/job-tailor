@@ -18,7 +18,6 @@ algorithms to analyze job descriptions and match them with the user's skills and
 - **Web Scraping**: [Crawlee](https://crawlee.dev/), [Playwright](https://playwright.dev/)
 - **AI**: [Groq](https://groq.ai/), [OpenAI](https://openai.com/)
 
-
 ## Getting Started for Developers
 
 ## Requirements
@@ -31,7 +30,7 @@ algorithms to analyze job descriptions and match them with the user's skills and
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/job-tailor.git
+git clone https://github.com/stevencrawford/job-tailor.git
 cd job-tailor
 ```
 
@@ -55,7 +54,7 @@ This will start PostgresDB and Redis containers.
 
 Run database migrations:
 ```bash
-pnpm run prisma-db-push
+pnpm run prisma:push
 ```
 
 Start the development server:
@@ -64,6 +63,6 @@ Start the development server:
 pnpm run dev
 ```
 
-This will start the NestJS backend servers and the React development server.
+This will start the NestJS backend server and the React development server.
 
 You can now access the application at http://localhost:3000.

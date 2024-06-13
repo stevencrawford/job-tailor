@@ -6,6 +6,7 @@ import { IDataProvider } from '../data-provider.interface';
 import { HimalayasAppRssProvider } from './providers/himalayas-app.provider';
 import { RssParserCrawler } from './rss-parser-crawler';
 import { ProviderFactory } from '../common/provider.factory';
+import { WeWorkRemotelyProvider } from './providers/weworkremotely.provider';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProviderFactory } from '../common/provider.factory';
   ],
   providers: [
     HimalayasAppRssProvider,
+    WeWorkRemotelyProvider,
     ProviderFactory<RssParserCrawler>,
     {
       provide: 'PROVIDERS',
@@ -24,10 +26,11 @@ import { ProviderFactory } from '../common/provider.factory';
       },
       inject: [
         HimalayasAppRssProvider,
+        WeWorkRemotelyProvider,
       ],
     },
     RssCollectorService
   ],
   exports: [RssCollectorService],
 })
-export class RSSCollectorModule {}
+export class RssCollectorModule {}

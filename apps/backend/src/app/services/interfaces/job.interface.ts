@@ -45,6 +45,7 @@ export enum JobCategory {
   FULL_STACK_ENGINEER = 'Full-Stack Engineer',
   BACKEND_ENGINEER = 'Backend Engineer',
   FRONTEND_ENGINEER = 'Frontend Engineer',
+  SITE_RELIABILITY_ENGINEER = 'Site Reliability Engineer',
   MOBILE_ENGINEER = 'Mobile Engineer',
   MOBILE_IOS_ENGINEER = 'Mobile iOS Engineer',
   MOBILE_ANDROID_ENGINEER = 'Mobile Android Engineer',
@@ -59,3 +60,9 @@ export enum JobCategory {
   SALES = 'Sales',
   OTHER = 'Other',
 }
+
+export const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+});

@@ -9,6 +9,8 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
   readonly _logger = new Logger(this.constructor.name);
   readonly _bullQueueDispatcher: IJobDispatcher;
 
+  abstract readonly _identifier: string;
+
   protected constructor(
     protected readonly  _providerFactory: ProviderFactory<T>,
     @InjectQueue('data-collector.job') protected readonly _dataCollectorJobQueue: Queue<{

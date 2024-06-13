@@ -11,14 +11,15 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler> {
+  _identifier = 'WEB';
 
   constructor(
-    private readonly _prismaService: PrismaService,
-    protected readonly  providerFactory: ProviderFactory<PlaywrightCrawler>,
+    protected readonly providerFactory: ProviderFactory<PlaywrightCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListing: JobAttributes
     }>,
+    private readonly _prismaService: PrismaService,
   ) {
     super(providerFactory, dataCollectorJobQueue);
   }

@@ -8,6 +8,8 @@ export interface IDataCollectorConfig {
 }
 
 export interface IDataCollectorService {
+  _identifier: string;
+
   fetchData(collectorConfig: IDataCollectorConfig): Promise<number>;
 }
 

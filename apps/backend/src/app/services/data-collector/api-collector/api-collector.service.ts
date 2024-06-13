@@ -11,6 +11,7 @@ import { BaseCollectorService } from '../common/base-collector.service';
 
 @Injectable()
 export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
+  _identifier = 'API';
 
   constructor(
     protected readonly  providerFactory: ProviderFactory<AxiosApiCrawler>,

@@ -3,7 +3,7 @@ import { ApiCollectorService } from './api-collector.service';
 import { BullModule } from '@nestjs/bullmq';
 import { defaultJobOptions } from '../../common/default-jobs-options';
 import { HimalayasAppApiProvider } from './providers/himalayas-app.provider';
-import { RemoteOkProvider } from './providers/remoteok.provider';
+import { RemoteOkApiProvider } from './providers/remoteok.provider';
 import { IDataProvider } from '../data-provider.interface';
 import { AxiosApiCrawler } from './axios-api-crawler';
 import { ProviderFactory } from '../common/provider.factory';
@@ -17,7 +17,7 @@ import { ProviderFactory } from '../common/provider.factory';
   ],
   providers: [
     HimalayasAppApiProvider,
-    RemoteOkProvider,
+    RemoteOkApiProvider,
     ProviderFactory<AxiosApiCrawler>,
     {
       provide: 'PROVIDERS',
@@ -26,7 +26,7 @@ import { ProviderFactory } from '../common/provider.factory';
       },
       inject: [
         HimalayasAppApiProvider,
-        RemoteOkProvider,
+        RemoteOkApiProvider,
       ],
     },
     ApiCollectorService

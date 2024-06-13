@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IJobDispatcher } from '../../data-collector.interface';
 import { AxiosApiCrawler } from '../axios-api-crawler';
-import { JobAttributes } from '../../../interfaces/job.interface';
+import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.interface';
 import { z } from 'zod';
 import { IDataProvider } from '../../data-provider.interface';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
@@ -19,7 +20,7 @@ export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
 
   handle(dispatcher: IJobDispatcher): AxiosApiCrawler {
     return new AxiosApiCrawler({
-      responseHandler: async (response) => {
+      responseHandler: async (response: AxiosResponse<ApiResponse>) => {
         const jobs = response.data.jobs;
         const jobListings: JobAttributes[] = jobs.map((job: JobData) => ({
           title: job.title,
@@ -30,7 +31,9 @@ export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
           category: job.parentCategories?.length > 0 ? job.parentCategories.at(0) : job.categories?.at(0), // TODO: need way to resolve categories back to our categories
           description: job.description,
           roleType: job.seniority && job.seniority.join(', '),
-          compensation: (job.minSalary && job.maxSalary) && `${job.minSalary} - ${job.maxSalary}`,
+          compensation: (job.minSalary && job.maxSalary)
+            && `${CURRENCY_FORMATTER.format(job.minSalary)} - ${CURRENCY_FORMATTER.format(job.maxSalary)}`,
+          source: this._identifier,
         }));
 
         dispatcher.dispatch({
@@ -59,4 +62,13 @@ const jobSchema = z.object({
   applicationLink: z.string().url(),
 });
 
+const responseSchema = z.object({
+  updated_at: z.number(),
+  offset: z.number(),
+  limit: z.number(),
+  total_count: z.number(),
+  jobs: z.array(jobSchema),
+});
+
 export type JobData = z.infer<typeof jobSchema>;
+export type ApiResponse = z.infer<typeof responseSchema>;

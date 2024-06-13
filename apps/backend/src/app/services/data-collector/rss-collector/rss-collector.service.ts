@@ -11,9 +11,10 @@ import { BaseCollectorService } from '../common/base-collector.service';
 
 @Injectable()
 export class RssCollectorService extends BaseCollectorService<RssParserCrawler> {
+  _identifier = 'RSS';
 
   constructor(
-    protected readonly  providerFactory: ProviderFactory<RssParserCrawler>,
+    protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListing: JobAttributes

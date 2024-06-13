@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IJobDispatcher } from '../../data-collector.interface';
 import { AxiosApiCrawler } from '../axios-api-crawler';
 import { IDataProvider } from '../../data-provider.interface';
-import { JobAttributes } from '../../../interfaces/job.interface';
+import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.interface';
 import { z } from 'zod';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
-export class RemoteOkProvider implements IDataProvider<AxiosApiCrawler> {
+export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
+  readonly _logger = new Logger(RemoteOkApiProvider.name);
   readonly _identifier = 'remoteok.com';
 
   fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
@@ -19,8 +21,9 @@ export class RemoteOkProvider implements IDataProvider<AxiosApiCrawler> {
 
   handle(dispatcher: IJobDispatcher): AxiosApiCrawler {
     return new AxiosApiCrawler({
-      responseHandler: async (response) => {
-        const jobs = response.data.jobs;
+      responseHandler: async (response: AxiosResponse<ApiResponse>) => {
+        // skip the first element as it is the legal notice
+        const jobs = response.data.slice(1) as JobData[];
         const jobListings: JobAttributes[] = jobs.map((job: JobData) => ({
           title: job.position,
           url: job.url,
@@ -29,7 +32,9 @@ export class RemoteOkProvider implements IDataProvider<AxiosApiCrawler> {
           location: job.location,
           category: job.tags.join(', '),
           description: job.description,
-          compensation: (job.salary_min && job.salary_max) ? `${job.salary_min} - ${job.salary_max}` : '',
+          compensation: (job.salary_min && job.salary_max)
+            && `${CURRENCY_FORMATTER.format(job.salary_min)} - ${CURRENCY_FORMATTER.format(job.salary_max)}`,
+          source: this._identifier,
         }));
 
         dispatcher.dispatch({
@@ -42,6 +47,11 @@ export class RemoteOkProvider implements IDataProvider<AxiosApiCrawler> {
     });
   }
 }
+
+const legalNoticeSchema = z.object({
+  last_updated: z.number(),
+  legal: z.string(),
+});
 
 const jobSchema = z.object({
   slug: z.string(),
@@ -59,4 +69,7 @@ const jobSchema = z.object({
   url: z.string().url(),
 });
 
+const responseSchema = z.array(z.union([jobSchema, legalNoticeSchema]));
+
 export type JobData = z.infer<typeof jobSchema>;
+export type ApiResponse = z.infer<typeof responseSchema>;

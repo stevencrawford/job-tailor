@@ -1,15 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AIProvider } from './llm-provider.interface';
+import { LlmProvider } from './llm-provider.interface';
 
 export type SupportProviders = 'openai' | 'groq';
 
 @Injectable()
 export class LlmProviderFactory {
   constructor(
-    @Inject('AI_PROVIDERS') private readonly providers: AIProvider[],
+    @Inject('AI_PROVIDERS') private readonly providers: LlmProvider[],
   ) {}
 
-  get(identifier: SupportProviders): AIProvider {
+  get(identifier: SupportProviders): LlmProvider {
     for (const provider of this.providers) {
       if (provider.identifier == identifier) {
         return provider;

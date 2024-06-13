@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JobAttributes, JobWithId } from '../interfaces/job.interface';
 import { PrismaService } from '../prisma/prisma.service';
-import { LlmProviderFactory } from '../llm/llm-provider.factory';
+import { LlmProviderFactory } from '../llm/providers/llm-provider.factory';
 
 @Injectable()
 export class JobSummarizeService {
@@ -14,6 +14,7 @@ export class JobSummarizeService {
 
   async summarizeJob(job: Pick<JobAttributes, 'description'> & JobWithId) {
     const summarizedJob = await this._llmProviderFactory.get('groq').summarizeJob(job);
+
     await this._prismaService.jobSummary.create({
       data: {
         jobId: job.id,
@@ -22,7 +23,8 @@ export class JobSummarizeService {
         responsibilities: summarizedJob.responsibilities,
         interviewProcess: summarizedJob.interviewProcess,
         technicalStack: summarizedJob.technicalStack,
-        aiProvider: 'GROQ' //summarizedJob.aiProvider.toUpperCase()
+        applicationProcess: summarizedJob.applicationProcess,
+        aiProvider: 'GROQ' // FIXME: summarizedJob.aiProvider.toUpperCase()
       },
     });
   }

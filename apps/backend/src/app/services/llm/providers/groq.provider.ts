@@ -1,23 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { JobAttributes, JobAttributesRequired, JobCategory, JobLevel } from '../../interfaces/job.interface';
-import { ConfigService } from '@nestjs/config';
-import { parseJSON } from '../../../utils/json.util';
-import { AIProvider, CategorizedJob, Classification, SummarizedJob } from '../llm-provider.interface';
-import Groq from 'groq-sdk';
 import {
-  categorizeResponseSchema,
-  CLASSIFIED_TYPE,
-  classifyResponseSchema,
-  summarizeJobSchema,
-} from '../schema/llm-response.schema';
-import { ASSISTANT_MESSAGE } from '../llm-provider.constants';
-import { SupportProviders } from '../llm-provider.factory';
+  JobAttributes,
+  JobAttributesRequired,
+  JobCategory,
+  JobLevel,
+  JobSummaryAttributes,
+} from '../../interfaces/job.interface';
+import { ConfigService } from '@nestjs/config';
+import { parseJSON } from '../../../utils/json.utils';
+import { CategorizedJob, Classification, LlmProvider, SummarizedJob } from './llm-provider.interface';
+import Groq from 'groq-sdk';
+import { categorizeResponseSchema, classifyResponseSchema, summarizeJobSchema } from '../schema/llm-response.schema';
+import { SupportProviders } from './llm-provider.factory';
+import { UserExperienceAttributes } from '../../interfaces/user.interface';
+import {
+  CATEGORIZE_ASSISTANT_MESSAGE,
+  getJobMatchAssistantMessage,
+  SUMMARIZE_ASSISTANT_MESSAGE,
+} from '../llm.messages';
 
 const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
-const GROQ_MODEL_LLAMA3_8B = 'llama3-8b-8192';
 
 @Injectable()
-export class GroqProvider implements AIProvider {
+export class GroqProvider implements LlmProvider {
   readonly _logger = new Logger(GroqProvider.name);
   identifier: SupportProviders = 'groq';
 
@@ -29,7 +34,7 @@ export class GroqProvider implements AIProvider {
     });
   }
 
-  async classifyJob(job: JobAttributes): Promise<JobAttributes & Classification> {
+  async matchJob(experience: UserExperienceAttributes, jobSummary: JobSummaryAttributes): Promise<Classification> {
     const message = `Return a JSON { "score": number, "decision": "APPLY" | "CONSIDER" | "IGNORE", "reason": string? }.
 
 An example response would be:
@@ -45,14 +50,19 @@ Rules:
 
 The job specification:
 ###
-${job.description}
+Experience:
+${jobSummary.experienceRequirements}
+Responsibilities:
+${jobSummary.responsibilities}
+Technical Skills:
+${jobSummary.technicalStack}
 ###
 `;
     const response = await this._groq.chat.completions.create({
       messages: [
         {
           role: 'assistant',
-          content: ASSISTANT_MESSAGE,
+          content: getJobMatchAssistantMessage(experience),
         },
         {
           role: 'user',
@@ -76,15 +86,13 @@ ${job.description}
     const res = parseJSON(content);
     this._logger.log(`Groq produced output: ${JSON.stringify(res)}`);
     return {
-      ...job,
       ...classifyResponseSchema.parse(res),
-      state: CLASSIFIED_TYPE.CLASSIFIED_FULL as const,
     };
   }
 
   async categorizeJobs(jobs: ({
     id: string
-  } & Pick<JobAttributesRequired, 'title' | 'url'>)[]): Promise<{ results?: CategorizedJob[] }> {
+  } & Pick<JobAttributesRequired, 'title'>)[]): Promise<{ results?: CategorizedJob[] }> {
     const message = `Return a JSON array { "results": Array<{"id": string, "title": string, "url": string, "category": string, "level": string } }
 An example response would be:
 {
@@ -103,15 +111,15 @@ Your choices for category and level are (Only use these values):
 Categories: [${Object.values(JobCategory).join(',')}]
 Levels: [${Object.values(JobLevel).join(',')}]
 
-List of jobs: ID|TITLE|URL
+List of jobs: ID|TITLE
 ---
-${jobs.map(j => `${j.id}|${j.title}|${j.url}`).join('\n')}}
+${jobs.map(j => `${j.id}|${j.title}`).join('\n')}}
 `;
     const response = await this._groq.chat.completions.create({
       messages: [
         {
           role: 'assistant',
-          content: `You summarize job titles into category and level.`,
+          content: CATEGORIZE_ASSISTANT_MESSAGE,
         },
         {
           role: 'user',
@@ -147,11 +155,7 @@ ${job.description}
       messages: [
         {
           role: 'assistant',
-          content: `Given a complete job description, extract the relevant information. Each field has max length of 500 characters so summarize when necessary.
-Rules:
-technicalStack: If the job is not technical leave blank. Otherwise pick out at most 8 keys skills/technologies based on importance.
-interviewProcess: If the job does not state an interview process leave blank. Otherwise, summarize the process.
-`,
+          content: SUMMARIZE_ASSISTANT_MESSAGE,
         },
         {
           role: 'user',

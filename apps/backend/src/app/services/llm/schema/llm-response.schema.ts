@@ -1,31 +1,22 @@
 import { z } from 'zod';
 import { JobLevel } from '../../interfaces/job.interface';
 
-export enum AI_DECISION {
+export enum LLM_DECISION {
   UNKNOWN = 'UNKNOWN',
   IGNORE = 'IGNORE',
   CONSIDER = 'CONSIDER',
   APPLY = 'APPLY',
 }
 
-export enum CLASSIFIED_TYPE {
-  CLASSIFIED_TITLE = 'CLASSIFIED_TITLE',
-  CLASSIFIED_FULL = 'CLASSIFIED_FULL',
-}
-
 export const classifyResponseSchema = z.object({
-  state: z.enum([
-    CLASSIFIED_TYPE.CLASSIFIED_TITLE,
-    CLASSIFIED_TYPE.CLASSIFIED_FULL,
-  ]).optional(),
   score: z.number().min(0).max(10),
   decision: z
     .enum([
-      AI_DECISION.UNKNOWN,
-      AI_DECISION.IGNORE,
-      AI_DECISION.CONSIDER,
-      AI_DECISION.APPLY,
-    ]).default(AI_DECISION.UNKNOWN),
+      LLM_DECISION.UNKNOWN,
+      LLM_DECISION.IGNORE,
+      LLM_DECISION.CONSIDER,
+      LLM_DECISION.APPLY,
+    ]).default(LLM_DECISION.UNKNOWN),
   reason: z.string().or(null).optional(),
 });
 
@@ -55,4 +46,5 @@ export const summarizeJobSchema = z.object({
   experienceRequirements: z.string(),
   technicalStack: z.string(),
   interviewProcess: z.string().optional(),
+  applicationProcess: z.string().optional(),
 });

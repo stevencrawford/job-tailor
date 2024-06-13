@@ -5,7 +5,8 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { WebCollectorService } from '../web-collector/web-collector.service';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
-import { RSSCollectorService } from '../rss-collector/rss-collector.service';
+import { RssCollectorService } from '../rss-collector/rss-collector.service';
+import { ApiCollectorService } from '../api-collector/api-collector.service';
 
 @Injectable()
 @Processor('data-collector.fetch', { concurrency: 1 })
@@ -14,7 +15,8 @@ export class DataCollectorFetchProcessor extends WorkerHost {
 
   constructor(
     private readonly _webCollectorService: WebCollectorService,
-    private readonly _rssCollectorService: RSSCollectorService,
+    private readonly _rssCollectorService: RssCollectorService,
+    private readonly _apiCollectorService: ApiCollectorService,
     private readonly _dataCollectorService: DataCollectorService,
   ) {
     super();
@@ -56,9 +58,9 @@ export class DataCollectorFetchProcessor extends WorkerHost {
       case 'RSS':
         return this._rssCollectorService.fetchData(job.data);
       case 'API':
-        return Promise.reject(new Error('Not implemented yet'));
+        return this._apiCollectorService.fetchData(job.data);
       default:
-        return Promise.reject(new Error('Connector not supported'));
+        return Promise.reject(new Error(`Connector type ${job.data.type} not supported`));
     }
   }
 
@@ -71,10 +73,5 @@ export class DataCollectorFetchProcessor extends WorkerHost {
   @OnWorkerEvent('failed')
   onFailed(job: Job<any>, err: Error): void {
     this._logger.warn(`Failed job ${job.id}: ${err.message}`);
-  }
-
-  @OnWorkerEvent('completed')
-  onCompleted(job: Job<any>): void {
-    this._logger.log(`Completed job ${job.id}`);
   }
 }

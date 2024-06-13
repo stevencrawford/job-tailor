@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig, webConfigSchema } from '../web-collector.interface';
 import { DATETIME_TRANSFORMER, optionalLocator } from '../utils/playwright.utils';
 import { Page } from '@playwright/test';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import web3CareerConfigJson from '../config/web3-career.config.json';
 import { RobotsFile } from 'crawlee';
 import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { WebCollectorConfig, webConfigSchema } from '../schema/web-config.schema';
 
 @Injectable()
 export class Web3CareerWebProvider extends PaginatedWebProvider {
@@ -22,7 +22,7 @@ export class Web3CareerWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
+  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/remote-jobs`;
   }
 

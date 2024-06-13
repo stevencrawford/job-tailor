@@ -19,8 +19,8 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Create search criteria
-  await prisma.SearchCriteria.createMany({
+  // Create UserSearch criteria
+  await prisma.UserSearch.createMany({
     data: [
       {
         jobCategory: 'Full-Stack Engineer',
@@ -35,6 +35,7 @@ async function main() {
         userId: '758A55EE-3484-4C58-8024-86C66D99B947',
       },
     ],
+    skipDuplicates: true,
   });
 
 
@@ -72,6 +73,16 @@ async function main() {
         frequency: 'EVERY_DAY',
         config: {
           url: 'https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss'
+        },
+        status: 'ONLINE',
+      },
+      {
+        id: '083D5898-21C8-4509-A0EA-2ACBC0FA9F5D',
+        name: 'himalayas.app',
+        type: 'RSS',
+        frequency: 'EVERY_DAY',
+        config: {
+          url: 'https://himalayas.app/jobs/rss'
         },
         status: 'ONLINE',
       },

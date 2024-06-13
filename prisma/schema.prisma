@@ -15,20 +15,41 @@ model User {
   email String @unique
   name  String
 
-  matchedJobs    JobMatch[]
-  SearchCriteria SearchCriteria?
+  matchedJobs JobMatch[]
+  search      UserSearch?
+  experience  UserExperience[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model SearchCriteria {
-  id          String   @id @default(uuid())
+model UserSearch {
+  id          String    @id @default(uuid())
   jobCategory String
-  jobLevel    JobLevel
+  jobLevel    JobLevel?
   region      String?
 
   userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserExperience {
+  id String @id @default(uuid())
+
+  jobTitle         String
+  company          String?
+  location         String?
+  responsibilities String
+  skillsUsed       String?
+  startDate        String?
+  endDate          String?
+  tenure           Int?
+  tenureUnit       TenureUnit?
+
+  userId String
   user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
@@ -89,6 +110,7 @@ model JobSummary {
   experienceRequirements String
   technicalStack         String
   interviewProcess       String
+  applicationProcess     String
   aiProvider             AIProvider
 
   jobId String @unique
@@ -154,4 +176,11 @@ enum Decision {
 enum AIProvider {
   GROQ
   OPEN_AI
+}
+
+enum TenureUnit {
+  DAYS
+  WEEKS
+  MONTHS
+  YEARS
 }

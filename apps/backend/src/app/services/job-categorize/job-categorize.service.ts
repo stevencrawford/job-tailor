@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { LlmProviderFactory } from '../llm/llm-provider.factory';
-import { CategorizedJob } from '../llm/llm-provider.interface';
+import { LlmProviderFactory } from '../llm/providers/llm-provider.factory';
+import { CategorizedJob } from '../llm/providers/llm-provider.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import { JobAttributesRequired, JobWithId } from '../interfaces/job.interface';
 
@@ -16,12 +16,10 @@ export class JobCategorizeService {
 
   async categorize(jobs: (JobAttributesRequired & JobWithId)[],
   ) {
-    // 1. Process them via AI to get job category and level
-    const categorized = await this._llmProviderFactory.get('groq').categorizeJobs(jobs);
+    const categorizedJobs = await this._llmProviderFactory.get('groq').categorizeJobs(jobs);
 
-    // 2. Update categorization for all jobs
     await Promise.all(
-      categorized.results?.map(async (job: (JobAttributesRequired & { id: string } & CategorizedJob)) => {
+      categorizedJobs.results?.map(async (job: (JobAttributesRequired & JobWithId & CategorizedJob)) => {
         await this._prismaService.job.update({
           where: {
             id: job.id,
@@ -35,7 +33,7 @@ export class JobCategorizeService {
       }),
     );
 
-    return categorized.results;
+    return categorizedJobs.results;
   }
 
 }

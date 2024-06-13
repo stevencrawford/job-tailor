@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Locator, Page } from '@playwright/test';
 import { RobotsFile } from 'crawlee';
 import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 import { subDays, subHours, subMinutes, subMonths, subSeconds, subWeeks } from 'date-fns';
 import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { WebCollectorConfig } from '../schema/web-config.schema';
 
 @Injectable()
 export class ArcDevWebProvider extends PaginatedWebProvider {
@@ -35,7 +35,7 @@ export class ArcDevWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
+  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     // https://arc.dev/remote-jobs?jobLevels=senior&jobTypes=fulltime&jobRoles=engineering&disciplines=back-end&disciplines=architect
     return `https://${this._identifier}/remote-jobs?jobLevels=senior&jobTypes=fulltime&jobRoles=engineering&disciplines=back-end`;
   }

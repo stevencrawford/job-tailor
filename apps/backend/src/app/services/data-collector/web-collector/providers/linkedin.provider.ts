@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { WebProvider } from '../web-collector.interface';
 import { defaultCrawlerOptions } from './provider.defaults';
 import { PlaywrightCrawler, RobotsFile, sleep } from 'crawlee';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
+import { IDataProvider } from '../../data-provider.interface';
 
 @Injectable()
-export class LinkedinWebProvider implements WebProvider {
+export class LinkedinWebProvider implements IDataProvider<PlaywrightCrawler> {
   readonly _identifier = 'linkedin.com';
 
   private _robotsFile: RobotsFile;
@@ -26,7 +26,7 @@ export class LinkedinWebProvider implements WebProvider {
     return domain.includes(this._identifier);
   }
 
-  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
+  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return '';
   }
 

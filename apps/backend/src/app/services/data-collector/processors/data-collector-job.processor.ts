@@ -56,7 +56,6 @@ export class DataCollectorJobProcessor extends WorkerHost {
       ),
     });
 
-    // Persist the job
     await this._prismaService.job.upsert({
       where: {
         id: job.data.jobListing['id'] || uuidv4(),  // FIXME: ID will never be populated
@@ -90,8 +89,4 @@ export class DataCollectorJobProcessor extends WorkerHost {
     this._logger.warn(`Failed job ${job.id}: ${err.message}`);
   }
 
-  @OnWorkerEvent('completed')
-  onCompleted(job: Job<any>): void {
-    this._logger.log(`Completed job ${job.id}`);
-  }
 }

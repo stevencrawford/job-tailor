@@ -4,7 +4,7 @@ import { defaultJobOptions } from '../common/default-jobs-options';
 import { PrismaModule } from '../prisma/prisma.module';
 import { DataCollectorService } from './data-collector.service';
 import { DataCollectorFetchProcessor } from './processors/data-collector-fetch.processor';
-import { APICollectorModule } from './api-collector/api-collector.module';
+import { ApiCollectorModule } from './api-collector/api-collector.module';
 import { RSSCollectorModule } from './rss-collector/rss-collector.module';
 import { WebCollectorModule } from './web-collector/web-collector.module';
 import { DataCollectorJobProcessor } from './processors/data-collector-job.processor';
@@ -16,7 +16,7 @@ import { DataCollectorJobProcessor } from './processors/data-collector-job.proce
       name: 'data-collector.fetch',
       defaultJobOptions,
     }),
-    APICollectorModule,
+    ApiCollectorModule,
     RSSCollectorModule,
     WebCollectorModule,
   ],

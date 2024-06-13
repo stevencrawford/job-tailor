@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { WebCollectorConfig } from '../web-collector.interface';
 import { PaginatedWebProvider } from './paginated-web.provider';
 import { Page } from '@playwright/test';
 import { RobotsFile } from 'crawlee';
 import { DATETIME_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
 import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { WebCollectorConfig } from '../schema/web-config.schema';
 
 @Injectable()
 export class RemoteOkWebProvider extends PaginatedWebProvider {
@@ -31,7 +31,7 @@ export class RemoteOkWebProvider extends PaginatedWebProvider {
     this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
   }
 
-  searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
+  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
     return `https://${this._identifier}/remote-engineer-jobs?location=Worldwide,region_EU&order_by=date`;
   }
 

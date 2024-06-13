@@ -1,55 +1,41 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ProviderFactory } from './providers/provider.factory';
-import { JobDispatcher } from './web-collector.interface';
-import { Dictionary, Source } from 'crawlee';
-import { PrismaService } from '../../prisma/prisma.service';
-import { IDataCollectorConfig, IDataCollectorService } from '../data-collector.interface';
+import { Injectable } from '@nestjs/common';
+import { PlaywrightCrawler, Source } from 'crawlee';
+import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError, WebCollectorError } from '../errors/data-collector.error';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { JobAttributes } from '../../interfaces/job.interface';
+import { ProviderFactory } from '../common/provider.factory';
+import { BaseCollectorService } from '../common/base-collector.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class WebCollectorService implements IDataCollectorService {
-  readonly _logger = new Logger(WebCollectorService.name);
-  readonly _bullQueueDispatcher: JobDispatcher;
+export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler> {
 
   constructor(
-    private readonly _crawlerHandlerFactory: ProviderFactory,
     private readonly _prismaService: PrismaService,
-    @InjectQueue('data-collector.job') private readonly _dataCollectorJobQueue: Queue<{ collectorConfig: IDataCollectorConfig, jobListing: Dictionary }>,
+    protected readonly  providerFactory: ProviderFactory<PlaywrightCrawler>,
+    @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
+      collectorConfig: IDataCollectorConfig,
+      jobListing: JobAttributes
+    }>,
   ) {
-    this._bullQueueDispatcher = {
-      dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: Dictionary[] }) => {
-        await this._dataCollectorJobQueue.addBulk(payload.jobListings
-          .filter((jobListing) => {
-            // TODO: filter out jobs already seen in redis
-          })
-          .map((jobListing) => {
-          return {
-            name: `web-collector-${payload.collectorConfig.name}`,
-            data: {
-              collectorConfig: payload.collectorConfig,
-              jobListing,
-            },
-          };
-        }));
-      },
-    };
+    super(providerFactory, dataCollectorJobQueue);
   }
 
   async fetchData(collectorConfig: IDataCollectorConfig): Promise<number> {
-    const handler = this._crawlerHandlerFactory.get(collectorConfig.name);
+    const handler = this._providerFactory.get(collectorConfig.name);
     if (!handler) {
       throw new UnknownCollectorError(`Connector "${collectorConfig.name}" is not supported.`);
     }
 
     // 2. Find all User.SearchCriteria TODO: filter based on Connector support JobCategories
-    const searchCriteria = await this._prismaService.searchCriteria.findMany();
+    const userSearches = await this._prismaService.userSearch.findMany();
 
-    // 3. Iterate through the searchCriteria and build unique set of urls.
-    const uniqueConnectorUrls: Set<string> = new Set(searchCriteria.map(config => {
+    // 3. Iterate through the userSearches and build unique set of urls.
+    const uniqueConnectorUrls: Set<string> = new Set(userSearches.map(config => {
       const { jobCategory, region, jobLevel } = config;
-      return handler.searchUrl({ jobCategory, jobLevel, region });
+      return handler.fetchUrl({ jobCategory, jobLevel, region });
     }));
 
     const sources: Source[] = [];

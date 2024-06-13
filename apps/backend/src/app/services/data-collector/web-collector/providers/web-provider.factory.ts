@@ -1,14 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { WebProvider, JobDispatcher } from '../web-collector.interface';
 import { PlaywrightCrawler } from 'crawlee';
+import { IJobDispatcher } from '../../data-collector.interface';
+import { IDataProvider } from '../../data-provider.interface';
 
 @Injectable()
-export class ProviderFactory {
+export class WebProviderFactory {
   constructor(
-    @Inject('CRAWLER_HANDLERS') private readonly handlers: WebProvider[],
+    @Inject('CRAWLER_HANDLERS') private readonly handlers: IDataProvider<PlaywrightCrawler>[],
   ) {}
 
-  get(id: string): WebProvider {
+  get(id: string): IDataProvider<PlaywrightCrawler> {
     for (const handler of this.handlers) {
       if (handler._identifier === id) {
         return handler;
@@ -16,7 +17,7 @@ export class ProviderFactory {
     }
   }
 
-  handle(url: string, listener: JobDispatcher): PlaywrightCrawler {
+  handle(url: string, listener: IJobDispatcher): PlaywrightCrawler {
     for (const handler of this.handlers) {
       if (handler.supports(url)) {
         return handler.handle(listener);

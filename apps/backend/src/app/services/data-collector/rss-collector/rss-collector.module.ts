@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RSSCollectorService } from './rss-collector.service';
+import { RssCollectorService } from './rss-collector.service';
 import { BullModule } from '@nestjs/bullmq';
 import { defaultJobOptions } from '../../common/default-jobs-options';
+import { IDataProvider } from '../data-provider.interface';
+import { HimalayasAppRssProvider } from './providers/himalayas-app.provider';
+import { RssParserCrawler } from './rss-parser-crawler';
+import { ProviderFactory } from '../common/provider.factory';
 
 @Module({
   imports: [
@@ -10,7 +14,20 @@ import { defaultJobOptions } from '../../common/default-jobs-options';
       defaultJobOptions
     }),
   ],
-  providers: [RSSCollectorService],
-  exports: [RSSCollectorService],
+  providers: [
+    HimalayasAppRssProvider,
+    ProviderFactory<RssParserCrawler>,
+    {
+      provide: 'PROVIDERS',
+      useFactory: (...providers: IDataProvider<RssParserCrawler>[]) => {
+        return providers;
+      },
+      inject: [
+        HimalayasAppRssProvider,
+      ],
+    },
+    RssCollectorService
+  ],
+  exports: [RssCollectorService],
 })
 export class RSSCollectorModule {}

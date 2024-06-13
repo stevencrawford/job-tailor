@@ -17,6 +17,14 @@ export interface JobAttributesOptional {
 
 export interface JobAttributes extends JobAttributesRequired, JobAttributesOptional {}
 
+export interface JobSummaryAttributes {
+  responsibilities: string;
+  experienceRequirements: string;
+  technicalStack: string
+  interviewProcess: string;
+  applicationProcess: string;
+}
+
 export interface JobWithId {
   id: string;
 }

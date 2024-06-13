@@ -1,13 +1,14 @@
-import { JobDispatcher, WebCollectorConfig, WebProvider } from '../web-collector.interface';
 import { defaultCrawlerOptions } from './provider.defaults';
 import { PlaywrightCrawler, RobotsFile } from 'crawlee';
 import { timestampDiff } from '../../../../utils/date.utils';
 import { Page } from '@playwright/test';
 import { Logger } from '@nestjs/common';
-import { IDataCollectorConfig } from '../../data-collector.interface';
+import { IDataCollectorConfig, IJobDispatcher } from '../../data-collector.interface';
 import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { WebCollectorConfig } from '../schema/web-config.schema';
+import { IDataProvider } from '../../data-provider.interface';
 
-export abstract class PaginatedWebProvider implements WebProvider {
+export abstract class PaginatedWebProvider implements IDataProvider<PlaywrightCrawler> {
   readonly _logger = new Logger(this.constructor.name);
   protected _robotsFile: RobotsFile;
   protected readonly _config: WebCollectorConfig;
@@ -19,7 +20,7 @@ export abstract class PaginatedWebProvider implements WebProvider {
     return domain.includes(this._identifier);
   }
 
-  handle(dispatcher: JobDispatcher): PlaywrightCrawler {
+  handle(dispatcher: IJobDispatcher): PlaywrightCrawler {
     return new PlaywrightCrawler({
       ...defaultCrawlerOptions,
       requestHandler: async ({ request, page, enqueueLinks }) => {
@@ -70,7 +71,7 @@ export abstract class PaginatedWebProvider implements WebProvider {
     });
   }
 
-  abstract searchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string;
+  abstract fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string;
 
   abstract getListPageContent(page: Page): Promise<JobAttributesRequired[]>;
 

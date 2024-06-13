@@ -36,7 +36,7 @@ dependencies:
     specifier: ^10.0.0
     version: 10.0.0(@nestjs/common@10.3.9)(@nestjs/core@10.3.9)(ioredis@5.4.1)
   axios:
-    specifier: ^1.6.0
+    specifier: ^1.7.2
     version: 1.7.2
   bullmq:
     specifier: ^5.7.8
@@ -7794,7 +7794,7 @@ packages:
     resolution: {integrity: sha512-bfL/sxJ+HnT2FFVDOs74PbPuWNg/xOX9BWefn7a5CVF5hI1cXUHaa/6y4tm6i1T0KDqomQ/hOKVdpGqSWIBuhA==}
     engines: {node: '>=16'}
     dependencies:
-      got: 14.4.0
+      got: 14.4.1
       header-generator: 2.1.52
       http2-wrapper: 2.2.1
       mimic-response: 4.0.0
@@ -7803,8 +7803,8 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /got@14.4.0:
-    resolution: {integrity: sha512-baa2HMfREJ9UQSXOPwWe0DNK+FT8Okcxe9kmTJvaetv2q/MUxq0qFzEnfSbxo+wj45/QioGcH5ZhuT9VBIPJ5Q==}
+  /got@14.4.1:
+    resolution: {integrity: sha512-IvDJbJBUeexX74xNQuMIVgCRRuNOm5wuK+OC3Dc2pnSoh1AOmgc7JVj7WC+cJ4u0aPcO9KZ2frTXcqK4W/5qTQ==}
     engines: {node: '>=20'}
     dependencies:
       '@sindresorhus/is': 6.3.1
@@ -7818,6 +7818,7 @@ packages:
       lowercase-keys: 3.0.0
       p-cancelable: 4.0.1
       responselike: 3.0.0
+      type-fest: 4.19.0
     dev: false
 
   /graceful-fs@4.2.11:

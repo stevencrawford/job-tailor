@@ -10,7 +10,7 @@
   },
   "paginationSelector": ".page-item.next > a",
   "staleJobThreshold": {
-    "value": 6,
+    "value": 24,
     "unit": "hour"
   }
 }

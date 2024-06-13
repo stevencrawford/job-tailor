@@ -5,12 +5,13 @@ import { Web3CareerWebProvider } from './providers/web3-career.provider';
 import { JustRemoteWebProvider } from './providers/just-remote.provider';
 import { ArcDevWebProvider } from './providers/arc-dev.provider';
 import { RemoteOkWebProvider } from './providers/remoteok.provider';
-import { ProviderFactory } from './providers/provider.factory';
-import { WebProvider } from './web-collector.interface';
 import { WebCollectorService } from './web-collector.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { BullModule } from '@nestjs/bullmq';
 import { defaultJobOptions } from '../../common/default-jobs-options';
+import { IDataProvider } from '../data-provider.interface';
+import { PlaywrightCrawler } from 'crawlee';
+import { ProviderFactory } from '../common/provider.factory';
 
 @Module({
   imports: [
@@ -27,10 +28,10 @@ import { defaultJobOptions } from '../../common/default-jobs-options';
     JustRemoteWebProvider,
     ArcDevWebProvider,
     RemoteOkWebProvider,
-    ProviderFactory,
+    ProviderFactory<PlaywrightCrawler>,
     {
-      provide: 'CRAWLER_HANDLERS',
-      useFactory: (...handles: WebProvider[]) => {
+      provide: 'PROVIDERS',
+      useFactory: (...handles: IDataProvider<PlaywrightCrawler>[]) => {
         return handles;
       },
       inject: [

@@ -3,7 +3,7 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { RssCollectorConfig, rssConfigSchema } from './schema/rss-config.schema';
-import { JobAttributes } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-collector.error';
 import { ProviderFactory } from '../common/provider.factory';
 import { RssParserCrawler } from './rss-parser-crawler';
@@ -17,7 +17,7 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
     protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListing: JobAttributes
+      jobListings: (JobAttributes | JobAttributesRequired)[]
     }>,
   ) {
     super(providerFactory, dataCollectorJobQueue);

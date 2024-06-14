@@ -4,7 +4,7 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError, WebCollectorError } from '../errors/data-collector.error';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { JobAttributes } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 import { BaseCollectorService } from '../common/base-collector.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProviderFactory } from '../common/provider.factory';
@@ -19,7 +19,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
     protected readonly providerFactory: ProviderFactory<PlaywrightCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListing: JobAttributes
+      jobListings: (JobAttributes | JobAttributesRequired)[]
     }>,
     private readonly _prismaService: PrismaService,
   ) {
@@ -73,7 +73,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
       }
     }
 
-    return Promise.resolve(1)
+    return Promise.resolve(1);
   }
 
 }

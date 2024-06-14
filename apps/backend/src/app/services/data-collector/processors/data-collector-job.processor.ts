@@ -20,14 +20,17 @@ export class DataCollectorJobProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<{ collectorConfig: IDataCollectorConfig, jobListing: JobAttributes | JobAttributesRequired }>): Promise<any> {
+  async process(job: Job<{
+    collectorConfig: IDataCollectorConfig,
+    jobListings: (JobAttributes | JobAttributesRequired)[]
+  }>): Promise<any> {
     return this.processJobWithErrorHandler(job).catch((err) => {
       // TODO: handle errors
     });
   }
 
   private async processJobWithErrorHandler(
-    job: Job<{ collectorConfig: IDataCollectorConfig, jobListing: JobAttributes | JobAttributesRequired }>,
+    job: Job<{ collectorConfig: IDataCollectorConfig, jobListings: (JobAttributes | JobAttributesRequired)[] }>,
   ): Promise<unknown> {
     try {
       // Work on job
@@ -43,39 +46,43 @@ export class DataCollectorJobProcessor extends WorkerHost {
 
   private async handleJob(job: Job<{
     collectorConfig: IDataCollectorConfig,
-    jobListing: JobAttributes | JobAttributesRequired
+    jobListings: (JobAttributes | JobAttributesRequired)[]
   }>): Promise<unknown> {
-    const alreadySeen = await this._redis.sismember(`seen:${job.data.collectorConfig.name}`, job.data.jobListing.url) === 1;
-    if (alreadySeen) {
-      return Promise.resolve(0);
-    }
 
-    const updateNonNullData = () => ({
-      ...Object.fromEntries(
-        Object.entries(job.data.jobListing).filter(([_, value]) => value !== null),
-      ),
-    });
+    return job.data.jobListings
+      .map(async (jobListing) => {
+        const alreadySeen = await this._redis.sismember(`seen:${job.data.collectorConfig.name}`, jobListing.url) === 1;
+        if (alreadySeen) {
+          return;
+        }
 
-    await this._prismaService.job.upsert({
-      where: {
-        id: job.data.jobListing['id'] || uuidv4(),  // FIXME: ID will never be populated
-      },
-      create: {
-        title: job.data.jobListing.title,
-        url: job.data.jobListing.url,
-        timestamp: job.data.jobListing.timestamp,
-        company: job.data.jobListing.company,
-        ...updateNonNullData(),
-        source: job.data.collectorConfig.name,
-      },
-      update: {
-        ...updateNonNullData(),
-        source: job.data.collectorConfig.name,
-      },
-    });
+        const updateNonNullData = () => ({
+          ...Object.fromEntries(
+            Object.entries(jobListing).filter(([_, value]) => value !== null),
+          ),
+        });
 
-    // Track the job
-    return this._redis.sadd(`seen:${job.data.collectorConfig.name}`, job.data.jobListing.url);
+        const saved = await this._prismaService.job.upsert({
+          where: {
+            id: jobListing['id'] || uuidv4(),  // FIXME: ID will never be populated
+          },
+          create: {
+            title: jobListing.title,
+            url: jobListing.url,
+            timestamp: jobListing.timestamp,
+            company: jobListing.company,
+            ...updateNonNullData(),
+            source: job.data.collectorConfig.name,
+          },
+          update: {
+            ...updateNonNullData(),
+            source: job.data.collectorConfig.name,
+          },
+        });
+
+        this._redis.sadd(`seen:${job.data.collectorConfig.name}`, jobListing.url);
+        return saved;
+      });
   }
 
   @OnWorkerEvent('error')

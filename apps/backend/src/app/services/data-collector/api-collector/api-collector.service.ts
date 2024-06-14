@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { IDataCollectorConfig } from '../data-collector.interface';
-import { JobAttributes } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 import { ApiCollectorConfig, apiConfigSchema } from './schema/api-config.schema';
 import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-collector.error';
 import { AxiosApiCrawler } from './axios-api-crawler';
@@ -17,7 +17,7 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
     protected readonly  providerFactory: ProviderFactory<AxiosApiCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListing: JobAttributes
+      jobListings: (JobAttributes | JobAttributesRequired)[]
     }>,
   ) {
     super(providerFactory, dataCollectorJobQueue);

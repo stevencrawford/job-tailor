@@ -15,21 +15,18 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
     protected readonly  _providerFactory: ProviderFactory<T>,
     @InjectQueue('data-collector.job') protected readonly _dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListing: JobAttributes
+      jobListings: (JobAttributesRequired | JobAttributes)[]
     }>,
   ) {
     this._bullQueueDispatcher = {
       dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: (JobAttributesRequired | JobAttributes)[] }) => {
-        await this._dataCollectorJobQueue.addBulk(payload.jobListings
-          .map((jobListing) => {
-            return {
-              name: `${payload.collectorConfig.type}-collector-${payload.collectorConfig.name}`,
-              data: {
-                collectorConfig: payload.collectorConfig,
-                jobListing,
-              },
-            };
-          }));
+        await this._dataCollectorJobQueue.add(
+          `${payload.collectorConfig.type}-collector-${payload.collectorConfig.name}`,
+          {
+            collectorConfig: payload.collectorConfig,
+            jobListings: payload.jobListings,
+          },
+        );
       },
     };
   }

@@ -30,7 +30,7 @@ export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
           description: job.description,
           roleType: job.seniority && job.seniority.join(', '),
           compensation: (job.minSalary && job.maxSalary)
-            && `${CURRENCY_FORMATTER.format(job.minSalary)} - ${CURRENCY_FORMATTER.format(job.maxSalary)}`,
+            ? `${CURRENCY_FORMATTER.format(job.minSalary)} - ${CURRENCY_FORMATTER.format(job.maxSalary)}`: '',
           source: this._identifier,
         }));
 

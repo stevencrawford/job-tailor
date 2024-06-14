@@ -1,13 +1,13 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
 import { DataCollectorFactory } from '../data-collector.factory';
+import { DATA_COLLECTOR_FETCH } from '../../common/queue.constants';
 
-@Injectable()
-@Processor('data-collector.fetch', { concurrency: 5 })
+@Processor(DATA_COLLECTOR_FETCH, { concurrency: 5 })
 export class DataCollectorFetchProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorFetchProcessor.name);
 

@@ -106,11 +106,11 @@ model Job {
 
 model JobSummary {
   id                     String     @id @default(uuid())
-  responsibilities       String
-  experienceRequirements String
-  technicalStack         String
-  interviewProcess       String
-  applicationProcess     String
+  responsibilities       String?
+  experienceRequirements String?
+  technicalStack         String?
+  interviewProcess       String?
+  applicationProcess     String?
   aiProvider             AIProvider
 
   jobId String @unique

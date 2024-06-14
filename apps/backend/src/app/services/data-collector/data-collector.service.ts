@@ -3,13 +3,14 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { JobsOptions, Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { IDataCollectorConfig } from './data-collector.interface';
+import { DATA_COLLECTOR_FETCH } from '../common/queue.constants';
 
 @Injectable()
 export class DataCollectorService {
   readonly _logger = new Logger(DataCollectorService.name);
 
   constructor(
-    @InjectQueue('data-collector.fetch') private readonly _dataCollectorQueue: Queue<IDataCollectorConfig>,
+    @InjectQueue(DATA_COLLECTOR_FETCH) private readonly _dataCollectorQueue: Queue<IDataCollectorConfig>,
     private readonly _prismaService: PrismaService,
   ) {
   }

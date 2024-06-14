@@ -17,7 +17,7 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
     protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListings: (JobAttributes | JobAttributesRequired)[]
+      jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
   ) {
     super(providerFactory, dataCollectorJobQueue);

@@ -8,9 +8,8 @@
     "roleType": "turbo-frame[id=\"job\"] .posting-category.workplaceTypes",
     "description": "turbo-frame[id=\"job\"] .mx-auto"
   },
-  "paginationSelector": ".page-item.next > a",
   "staleJobThreshold": {
-    "value": 24,
+    "value": 6,
     "unit": "hour"
   }
 }

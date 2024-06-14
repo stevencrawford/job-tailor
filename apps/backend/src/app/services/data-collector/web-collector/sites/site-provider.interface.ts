@@ -6,7 +6,7 @@ export interface SiteProvider {
   _domain: string;
   _supportedUrls: string[]
 
-  getListPageContent(page: Page): Promise<(JobAttributes | JobAttributesRequired)[]>;
+  getListPageContent(page: Page): Promise<Array<JobAttributesRequired | JobAttributes>>;
 
   getDetailPageContent(page: Page): Promise<JobAttributesOptional>;
 

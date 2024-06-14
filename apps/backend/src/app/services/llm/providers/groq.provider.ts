@@ -93,27 +93,18 @@ ${jobSummary.technicalStack}
   async categorizeJobs(jobs: ({
     id: string
   } & Pick<JobAttributesRequired, 'title'>)[]): Promise<{ results?: CategorizedJob[] }> {
-    const message = `Return a JSON array { "results": Array<{"id": string, "title": string, "url": string, "category": string, "level": string } }
-An example response would be:
-{
-  "results": [
-    {
-      "id": "Job ID passed in",
-      "title": "Job Title passed in",
-      "url": "Job URL passed in",
-      "category": "${JobCategory.ENGINEER}",
-      "level": "${JobLevel.MID_SENIOR}",
-    }
-    ...
-  ]
+    const message = `Respond with JSON 
+{ 
+  "results": Array<{
+    "id": string, // Passed in request
+    "category": string, // Value is one of [${Object.values(JobCategory).join(',')}], 
+    "level": string, // Value is one of [${Object.values(JobLevel).join(',')}] 
+  }>
 }
-Your choices for category and level are (Only use these values):
-Categories: [${Object.values(JobCategory).join(',')}]
-Levels: [${Object.values(JobLevel).join(',')}]
 
-List of jobs: ID|TITLE
+List of jobs: ID:TITLE
 ---
-${jobs.map(j => `${j.id}|${j.title}`).join('\n')}}
+${jobs.map(j => `${j.id}:${j.title}`).join('\n')}}
 `;
     const response = await this._groq.chat.completions.create({
       messages: [
@@ -146,7 +137,7 @@ ${jobs.map(j => `${j.id}|${j.title}`).join('\n')}}
   }
 
   async summarizeJob(job: Pick<JobAttributes, 'description'>): Promise<SummarizedJob & { aiProvider: string }> {
-    const message = `Return a JSON { "responsibilities": string, "experienceRequirements": string, "technicalStack": string, "interviewProcess": string }
+    const message = `Return a JSON { "responsibilities": string, "experienceRequirements": string, "technicalStack": string, "interviewProcess": string, "applicationProcess": string }
 Job Description:
 ---
 ${job.description}

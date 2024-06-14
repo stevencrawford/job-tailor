@@ -14,20 +14,19 @@ export class JobCategorizeService {
   ) {
   }
 
-  async categorize(jobs: (JobAttributesRequired & JobWithId)[],
+  async categorizeJobs(jobs: Array<JobWithId & Pick<JobAttributesRequired, 'title'>>,
   ) {
     const categorizedJobs = await this._llmProviderFactory.get('groq').categorizeJobs(jobs);
 
     await Promise.all(
-      categorizedJobs.results?.map(async (job: (JobAttributesRequired & JobWithId & CategorizedJob)) => {
-        await this._prismaService.job.update({
+      categorizedJobs.results?.map(async (job: (JobWithId & CategorizedJob)) => {
+        return this._prismaService.job.update({
           where: {
             id: job.id,
           },
           data: {
             category: job.category,
-            level: job.level,
-            location: job.location,
+            level: job.level
           },
         });
       }),

@@ -19,7 +19,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
     protected readonly providerFactory: ProviderFactory<PlaywrightCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListings: (JobAttributes | JobAttributesRequired)[]
+      jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
     private readonly _prismaService: PrismaService,
   ) {

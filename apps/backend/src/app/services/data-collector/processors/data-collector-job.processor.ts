@@ -1,19 +1,22 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
-import { Job } from 'bullmq';
+import { Logger } from '@nestjs/common';
+import { FlowJob, FlowProducer, Job } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IDataCollectorConfig } from '../data-collector.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
-import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired, JobWithId } from '../../interfaces/job.interface';
+import { InjectJobEnricher } from '../../common/job-enricher-producer.decorator';
+import { collectAppConfig } from 'next/dist/build/utils';
+import { DATA_COLLECTOR_JOB, JOBS_CATEGORIZE, JOBS_ENRICH, JOBS_SUMMARIZE } from '../../common/queue.constants';
 
-@Injectable()
-@Processor('data-collector.job', { concurrency: 10 })
+@Processor(DATA_COLLECTOR_JOB, { concurrency: 10 })
 export class DataCollectorJobProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorJobProcessor.name);
 
   constructor(
+    @InjectJobEnricher() private _jobEnricherFlowProducer: FlowProducer,
     @InjectRedis() private readonly _redis: Redis,
     private readonly _prismaService: PrismaService,
   ) {
@@ -22,7 +25,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
 
   async process(job: Job<{
     collectorConfig: IDataCollectorConfig,
-    jobListings: (JobAttributes | JobAttributesRequired)[]
+    jobListings: Array<JobAttributesRequired | JobAttributes>
   }>): Promise<any> {
     return this.processJobWithErrorHandler(job).catch((err) => {
       // TODO: handle errors
@@ -30,7 +33,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
   }
 
   private async processJobWithErrorHandler(
-    job: Job<{ collectorConfig: IDataCollectorConfig, jobListings: (JobAttributes | JobAttributesRequired)[] }>,
+    job: Job<{ collectorConfig: IDataCollectorConfig, jobListings: Array<JobAttributesRequired | JobAttributes> }>,
   ): Promise<unknown> {
     try {
       // Work on job
@@ -46,16 +49,13 @@ export class DataCollectorJobProcessor extends WorkerHost {
 
   private async handleJob(job: Job<{
     collectorConfig: IDataCollectorConfig,
-    jobListings: (JobAttributes | JobAttributesRequired)[]
+    jobListings: Array<JobAttributesRequired | JobAttributes>
   }>): Promise<unknown> {
 
-    return job.data.jobListings
-      .map(async (jobListing) => {
-        const alreadySeen = await this._redis.sismember(`seen:${job.data.collectorConfig.name}`, jobListing.url) === 1;
-        if (alreadySeen) {
-          return;
-        }
-
+    const jobsToEnrich: Array<(JobWithId & (JobAttributes | JobAttributesRequired))> = [];
+    for (const jobListing of job.data.jobListings) {
+      const alreadySeen = await this._redis.sismember(`seen:${job.data.collectorConfig.name}`, jobListing.url) === 1;
+      if (!alreadySeen) {
         const updateNonNullData = () => ({
           ...Object.fromEntries(
             Object.entries(jobListing).filter(([_, value]) => value !== null),
@@ -80,9 +80,55 @@ export class DataCollectorJobProcessor extends WorkerHost {
           },
         });
 
-        this._redis.sadd(`seen:${job.data.collectorConfig.name}`, jobListing.url);
-        return saved;
+        jobsToEnrich.push({
+          ...saved,
+          timestamp: Number(saved.timestamp),
+        });
+
+        this._redis.sadd(`seen:${job.data.collectorConfig.name}`, saved.url);
+      }
+    }
+
+    if (jobsToEnrich.length > 0) {
+      const summarizeJobs: FlowJob = {
+        name: `enrich-jobs:${collectAppConfig.name}-summarize`,
+        data: { jobListings: jobsToEnrich },
+        queueName: JOBS_SUMMARIZE,
+        opts: {
+          failParentOnFailure: true,
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 15_000,
+          },
+        },
+      };
+
+      const categorizeJobs: FlowJob = {
+        name: `enrich-jobs:${collectAppConfig.name}-categorize`,
+        data: { jobListings: jobsToEnrich },
+        queueName: JOBS_CATEGORIZE,
+        opts: {
+          failParentOnFailure: true,
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 15_000,
+          },
+        },
+      };
+
+      return await this._jobEnricherFlowProducer.add({
+        name: `enrich-jobs:${collectAppConfig.name}`,
+        queueName: JOBS_ENRICH,
+        children: [categorizeJobs, summarizeJobs],
+        opts: {
+          failParentOnFailure: true,
+        },
       });
+    }
+
+    return 0;
   }
 
   @OnWorkerEvent('error')

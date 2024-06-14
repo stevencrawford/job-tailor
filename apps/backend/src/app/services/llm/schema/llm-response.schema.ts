@@ -22,10 +22,7 @@ export const classifyResponseSchema = z.object({
 
 export const categorizedJobSchema = z.object({
   id: z.string(),
-  title: z.string(),
-  url: z.string().url(),
   category: z.string(),
-  location: z.string().or(null).optional(),
   level: z.enum([
     JobLevel.INTERN,
     JobLevel.ENTRY,

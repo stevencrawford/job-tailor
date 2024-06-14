@@ -4,6 +4,7 @@ import { IDataCollectorConfig, IDataCollectorService, IJobDispatcher } from '../
 import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
 import { ProviderFactory } from './provider.factory';
 import { Logger } from '@nestjs/common';
+import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
 
 export abstract class BaseCollectorService<T> implements IDataCollectorService {
   readonly _logger = new Logger(this.constructor.name);
@@ -13,13 +14,19 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
 
   protected constructor(
     protected readonly  _providerFactory: ProviderFactory<T>,
-    @InjectQueue('data-collector.job') protected readonly _dataCollectorJobQueue: Queue<{
+    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly _dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListings: (JobAttributesRequired | JobAttributes)[]
+      jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
   ) {
     this._bullQueueDispatcher = {
-      dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: (JobAttributesRequired | JobAttributes)[] }) => {
+      dispatch: async (payload: { collectorConfig: IDataCollectorConfig, jobListings: Array<JobAttributesRequired | JobAttributes> }) => {
+        // TODO: it might make sense to perform the bull flow producer stuff here.
+        // Prisma:Persist
+        // Redis:Track
+        // Enrich:Categorize
+        // Enrich:Summarize
+        // Match:Candidates
         await this._dataCollectorJobQueue.add(
           `${payload.collectorConfig.type}-collector-${payload.collectorConfig.name}`,
           {

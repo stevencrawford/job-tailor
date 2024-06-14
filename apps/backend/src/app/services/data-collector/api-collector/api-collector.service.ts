@@ -17,7 +17,7 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
     protected readonly  providerFactory: ProviderFactory<AxiosApiCrawler>,
     @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
-      jobListings: (JobAttributes | JobAttributesRequired)[]
+      jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
   ) {
     super(providerFactory, dataCollectorJobQueue);

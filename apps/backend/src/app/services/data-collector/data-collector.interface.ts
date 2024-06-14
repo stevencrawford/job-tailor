@@ -14,5 +14,5 @@ export interface IDataCollectorService {
 }
 
 export interface IJobDispatcher {
-  dispatch(data: { collectorConfig: Pick<IDataCollectorConfig, 'name'>, jobListings: (JobAttributesRequired | JobAttributes)[] }): void;
+  dispatch(data: { collectorConfig: Pick<IDataCollectorConfig, 'name'>, jobListings: Array<JobAttributesRequired | JobAttributes> }): void;
 }

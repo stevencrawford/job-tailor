@@ -66,7 +66,7 @@ const RELATIVE_DATE_TRANSFORMER = async (element: Locator): Promise<number> => {
   const [value, unit] = relativeDateString.trim().split(' ');
   const numericValue = isNaN(parseInt(value, 10)) ? 1 : parseInt(value, 10);
 
-  if (!unit) { // i.e. 'New'
+  if (!unit) {
     return now.getTime();
   }
 

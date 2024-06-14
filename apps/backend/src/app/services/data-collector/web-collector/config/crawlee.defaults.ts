@@ -2,6 +2,7 @@ import { BrowserName, DeviceCategory } from '@crawlee/browser-pool';
 import { PlaywrightCrawlerOptions } from 'crawlee';
 
 export const defaultCrawlerOptions: PlaywrightCrawlerOptions = {
+  keepAlive: true,
   browserPoolOptions: {
     useFingerprints: true,
     fingerprintOptions: {

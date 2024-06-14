@@ -9,7 +9,7 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
   readonly _logger = new Logger(this.constructor.name);
   readonly _bullQueueDispatcher: IJobDispatcher;
 
-  abstract readonly _identifier: string;
+  abstract readonly _type: string;
 
   protected constructor(
     protected readonly  _providerFactory: ProviderFactory<T>,
@@ -23,7 +23,7 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
         await this._dataCollectorJobQueue.addBulk(payload.jobListings
           .map((jobListing) => {
             return {
-              name: `collector-${payload.collectorConfig.name}`,
+              name: `${payload.collectorConfig.type}-collector-${payload.collectorConfig.name}`,
               data: {
                 collectorConfig: payload.collectorConfig,
                 jobListing,

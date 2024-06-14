@@ -7,7 +7,7 @@ import { DataCollectorService } from '../data-collector.service';
 import { DataCollectorFactory } from '../data-collector.factory';
 
 @Injectable()
-@Processor('data-collector.fetch', { concurrency: 1 })
+@Processor('data-collector.fetch', { concurrency: 5 })
 export class DataCollectorFetchProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorFetchProcessor.name);
 

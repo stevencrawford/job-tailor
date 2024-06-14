@@ -9,7 +9,7 @@ export class DataCollectorFactory {
 
   get(id: 'WEB' | 'RSS' | 'API'): IDataCollectorService {
     for (const collector of this.collectors) {
-      if (collector._identifier === id) {
+      if (collector._type === id) {
         return collector;
       }
     }

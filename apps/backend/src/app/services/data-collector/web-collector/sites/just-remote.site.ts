@@ -1,30 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Locator, Page } from '@playwright/test';
-import { PaginatedWebProvider } from './paginated-web.provider';
 import justRemoteConfigJson from '../config/justremote.config.json';
-import { RobotsFile } from 'crawlee';
-import { optionalLocator, TRIM_TRANSFORMER } from '../utils/playwright.utils';
+import { optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
 import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
-import { WebCollectorConfig, webConfigSchema } from '../schema/web-config.schema';
+import { webConfigSchema } from '../schema/web-config.schema';
+import { SiteProvider } from './site-provider.interface';
 
 @Injectable()
-export class JustRemoteWebProvider extends PaginatedWebProvider {
-  readonly _identifier = 'justremote.co';
-  readonly _config: WebCollectorConfig;
-
-  constructor() {
-    super();
-    this._config = webConfigSchema.parse(justRemoteConfigJson);
-    this.initializeRobotsFile();
-  }
-
-  async initializeRobotsFile() {
-    this._robotsFile = await RobotsFile.find(`https://${this._identifier}/robots.txt`);
-  }
-
-  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
-    return `https://${this._identifier}/remote-developer-jobs`;
-  }
+export class JustRemoteWebProvider implements SiteProvider {
+  readonly _domain = 'justremote.co';
+  readonly _supportedUrls = ['/remote-developer-jobs'];
 
   async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
     const jobRows = await page.locator('div[class*="new-job-item__JobInnerWrapper"]').all();
@@ -35,9 +20,9 @@ export class JustRemoteWebProvider extends PaginatedWebProvider {
         const company = await optionalLocator(row, 'div[class*="new-job-item__JobItemCompany"]', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'div[class*="new-job-item__JobItemDate"]', DAY_MONTH_TRANSFORMER);
         return {
-          source: this._identifier,
+          source: this._domain,
           title,
-          url: new URL(`https://${this._identifier}/${await link.getAttribute('href')}`).toString(),
+          url: new URL(`https://${this._domain}/${await link.getAttribute('href')}`).toString(),
           company,
           timestamp,
         };
@@ -47,10 +32,14 @@ export class JustRemoteWebProvider extends PaginatedWebProvider {
 
   async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
-      location: await optionalLocator(page, this._config.selectors.location),
-      length: await optionalLocator(page, this._config.selectors.length),
-      description: await optionalLocator(page, this._config.selectors.description, DESCRIPTION_TRANSFORMER),
+      location: await optionalLocator(page, this.getConfig().selectors.location),
+      length: await optionalLocator(page, this.getConfig().selectors.length),
+      description: await optionalLocator(page, this.getConfig().selectors.description, DESCRIPTION_TRANSFORMER),
     };
+  }
+
+  getConfig() {
+    return webConfigSchema.parse(justRemoteConfigJson);
   }
 }
 

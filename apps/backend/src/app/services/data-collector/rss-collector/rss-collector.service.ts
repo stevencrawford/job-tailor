@@ -4,14 +4,14 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { RssCollectorConfig, rssConfigSchema } from './schema/rss-config.schema';
 import { JobAttributes } from '../../interfaces/job.interface';
-import { UnknownCollectorError } from '../errors/data-collector.error';
+import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-collector.error';
 import { ProviderFactory } from '../common/provider.factory';
 import { RssParserCrawler } from './rss-parser-crawler';
 import { BaseCollectorService } from '../common/base-collector.service';
 
 @Injectable()
 export class RssCollectorService extends BaseCollectorService<RssParserCrawler> {
-  _identifier = 'RSS';
+  _type = 'RSS';
 
   constructor(
     protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
@@ -32,8 +32,12 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
       throw new UnknownCollectorError(`Connector "${collectorConfig.name}" is not supported.`);
     }
 
-    const rssCrawler = rssProvider.handle(this._bullQueueDispatcher);
-    await rssCrawler.run(config.url);
+    if (rssProvider.hasSupport(config.url)) {
+      const rssCrawler = rssProvider.initialize(this._bullQueueDispatcher);
+      await rssCrawler.run(config.url);
+    } else {
+      throw new UnsupportedUrlError(`"${config.url}" not supported by ${rssProvider._identifier}`);
+    }
 
     return Promise.resolve(1);
   }

@@ -5,20 +5,18 @@ import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.inter
 import { z } from 'zod';
 import { IDataProvider } from '../../data-provider.interface';
 import { AxiosResponse } from 'axios';
+import { getDomain } from '../../../../utils/url.utils';
 
 @Injectable()
 export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
   readonly _identifier = 'himalayas.app';
 
-  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
-    return '';
+  hasSupport(url: string): boolean {
+    const domain = getDomain(url);
+    return (domain === this._identifier);
   }
 
-  supports(url: string): boolean {
-    return false;
-  }
-
-  handle(dispatcher: IJobDispatcher): AxiosApiCrawler {
+  initialize(dispatcher: IJobDispatcher): AxiosApiCrawler {
     return new AxiosApiCrawler({
       responseHandler: async (response: AxiosResponse<ApiResponse>) => {
         const jobs = response.data.jobs;

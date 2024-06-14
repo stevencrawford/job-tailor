@@ -8,7 +8,7 @@ export interface IDataCollectorConfig {
 }
 
 export interface IDataCollectorService {
-  _identifier: string;
+  _type: string;
 
   fetchData(collectorConfig: IDataCollectorConfig): Promise<number>;
 }

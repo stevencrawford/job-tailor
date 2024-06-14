@@ -5,21 +5,19 @@ import { IDataProvider } from '../../data-provider.interface';
 import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.interface';
 import { z } from 'zod';
 import { AxiosResponse } from 'axios';
+import { getDomain } from '../../../../utils/url.utils';
 
 @Injectable()
 export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
   readonly _logger = new Logger(RemoteOkApiProvider.name);
   readonly _identifier = 'remoteok.com';
 
-  fetchUrl(options: { jobCategory: string; jobLevel: string; region?: string }): string {
-    return '';
+  hasSupport(url: string): boolean {
+    const domain = getDomain(url);
+    return (domain === this._identifier);
   }
 
-  supports(url: string): boolean {
-    return false;
-  }
-
-  handle(dispatcher: IJobDispatcher): AxiosApiCrawler {
+  initialize(dispatcher: IJobDispatcher): AxiosApiCrawler {
     return new AxiosApiCrawler({
       responseHandler: async (response: AxiosResponse<ApiResponse>) => {
         // skip the first element as it is the legal notice

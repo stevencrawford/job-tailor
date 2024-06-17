@@ -2,7 +2,61 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-// Create Users
+
+  // Create Job Categories
+  const engineerCategory = await prisma.JobCategory.create({
+    data: {
+      name: 'Engineer',
+    },
+  });
+
+  await prisma.JobCategory.createMany({
+    data: [
+      {
+        name: 'Full-Stack Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Backend Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Frontend Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Site Reliability Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Mobile Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Mobile iOS Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Mobile Android Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'QA Engineer',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Tech Lead',
+        parentId: engineerCategory.id,
+      },
+      {
+        name: 'Staff Engineer',
+        parentId: engineerCategory.id,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  // Create Users
   await prisma.User.createMany({
     data: [
       {
@@ -23,14 +77,16 @@ async function main() {
   await prisma.UserSearch.createMany({
     data: [
       {
-        jobCategory: 'Full-Stack Engineer',
-        jobLevel: 'MID_SENIOR',
+        category: 'Full-Stack Engineer',
+        categoryParent: 'Engineer',
+        level: 'MID_SENIOR',
         region: 'Remote',
         userId: '3C7AEA76-64D6-4845-BBB8-F1C1A702C9CD',
       },
       {
-        jobCategory: 'Frontend Engineering',
-        jobLevel: 'ENTRY',
+        category: 'Frontend Engineer',
+        categoryParent: 'Engineer',
+        level: 'ENTRY',
         region: 'Worldwide',
         userId: '758A55EE-3484-4C58-8024-86C66D99B947',
       },
@@ -47,7 +103,9 @@ async function main() {
         name: 'arc.dev',
         type: 'WEB',
         frequency: 'EVERY_DAY',
-        config: {},
+        config: {
+          url: 'https://arc.dev/remote-jobs?jobLevels=senior&jobTypes=fulltime&jobRoles=engineering&disciplines=back-end'
+        },
         status: 'OFFLINE',
       },
       {
@@ -55,15 +113,19 @@ async function main() {
         name: 'justremote.co',
         type: 'WEB',
         frequency: 'EVERY_DAY',
-        config: {},
+        config: {
+          url: 'https://justremote.co/remote-developer-jobs'
+        },
         status: 'OFFLINE',
       },
       {
         id: 'D82E4D7C-A3D6-4732-AD28-85367521504E',
         name: 'web3.career',
         type: 'WEB',
-        frequency: 'EVERY_6_HOURS',
-        config: {},
+        frequency: 'EVERY_DAY',
+        config: {
+          url: 'https://web3.career/remote-jobs'
+        },
         status: 'ONLINE',
       },
       {

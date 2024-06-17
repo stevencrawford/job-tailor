@@ -24,10 +24,14 @@ model User {
 }
 
 model UserSearch {
-  id          String    @id @default(uuid())
-  jobCategory String
-  jobLevel    JobLevel?
-  region      String?
+  id     String    @id @default(uuid())
+  level  JobLevel?
+  region String?
+
+  category          String
+  categoryParent    String
+  jobCategory       JobCategory @relation(name: "UserSearchJobCategory", fields: [category], references: [name])
+  jobParentCategory JobCategory @relation(name: "UserSearchParentCategory", fields: [categoryParent], references: [name])
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
@@ -136,6 +140,19 @@ model JobMatch {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, jobId])
+}
+
+model JobCategory {
+  id       String        @id @default(uuid())
+  name     String        @unique
+  parent   JobCategory?  @relation("JobCategoryChildParent", fields: [parentId], references: [id])
+  parentId String?
+  children JobCategory[] @relation("JobCategoryChildParent")
+
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+  UserSearchByCategory       UserSearch[] @relation("UserSearchJobCategory")
+  UserSearchByParentCategory UserSearch[] @relation("UserSearchParentCategory")
 }
 
 enum ConnectorType {

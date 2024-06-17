@@ -9,10 +9,10 @@ export interface JobAttributesRequired {
 
 export interface JobAttributesOptional {
   location?: string;
-  length?: string;
   roleType?: string;
   description?: string;
   compensation?: string;
+  tags?: string;
 }
 
 export interface JobAttributes extends JobAttributesRequired, JobAttributesOptional {}

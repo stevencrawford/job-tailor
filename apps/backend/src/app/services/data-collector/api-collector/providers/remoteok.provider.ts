@@ -28,7 +28,7 @@ export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
           timestamp: job.epoch * 1000,
           company: job.company,
           location: job.location,
-          category: job.tags.join(', '),
+          tags: job.tags && job.tags.join(','),
           description: job.description,
           compensation: (job.salary_min && job.salary_max)
             ? `${CURRENCY_FORMATTER.format(job.salary_min)} - ${CURRENCY_FORMATTER.format(job.salary_max)}` : '',

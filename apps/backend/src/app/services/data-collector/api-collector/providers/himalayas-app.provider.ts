@@ -26,7 +26,7 @@ export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
           timestamp: job.pubDate * 1000, // Convert from Unix timestamp to milliseconds
           company: job.companyName,
           location: job.locationRestrictions && job.locationRestrictions.join(', '),
-          category: job.parentCategories?.length > 0 ? job.parentCategories.at(0) : job.categories?.at(0), // TODO: need way to resolve categories back to our categories
+          // category: job.parentCategories?.length > 0 ? job.parentCategories.at(0) : job.categories?.at(0), // TODO: need way to resolve categories back to our categories
           description: job.description,
           roleType: job.seniority && job.seniority.join(', '),
           compensation: (job.minSalary && job.maxSalary)

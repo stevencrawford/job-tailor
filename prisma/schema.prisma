@@ -89,10 +89,10 @@ model Job {
   level        JobLevel @default(UNKNOWN)
   description  String?
   location     String?
-  length       String?
   roleType     String?
   compensation String?
   company      String?
+  tags         String?
   timestamp    BigInt
 
   // summary field

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Locator, Page } from '@playwright/test';
 import justRemoteConfigJson from '../config/justremote.config.json';
-import { optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { MULTI_TEXT_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
+import { JobAttributes, JobAttributesOptional } from '../../../interfaces/job.interface';
 import { webConfigSchema } from '../schema/web-config.schema';
 import { SiteProvider } from './site-provider.interface';
 
@@ -11,20 +11,24 @@ export class JustRemoteWebProvider implements SiteProvider {
   readonly _domain = 'justremote.co';
   readonly _supportedUrls = ['/remote-developer-jobs'];
 
-  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
+  async getListPageContent(page: Page): Promise<Array<JobAttributes>> {
     const jobRows = await page.locator('div[class*="new-job-item__JobInnerWrapper"]').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<JobAttributesRequired> => {
+      jobRows.map(async (row): Promise<JobAttributes> => {
         const link = row.locator('a[class*="new-job-item__JobMeta"]');
         const title = await optionalLocator(row, 'h3[class*="new-job-item__JobTitle"]', TRIM_TRANSFORMER);
         const company = await optionalLocator(row, 'div[class*="new-job-item__JobItemCompany"]', TRIM_TRANSFORMER);
         const timestamp = await optionalLocator(row, 'div[class*="new-job-item__JobItemDate"]', DAY_MONTH_TRANSFORMER);
+        const tags = await optionalLocator(row, 'a[class*="dynamic-tags__StyledTag"]', MULTI_TEXT_TRANSFORMER(','));
+        const roleType = await optionalLocator(row, 'div[class*="new-job-item__Tag"]', TRIM_TRANSFORMER);
         return {
           source: this._domain,
           title,
           url: new URL(`https://${this._domain}/${await link.getAttribute('href')}`).toString(),
           company,
           timestamp,
+          tags,
+          roleType,
         };
       }),
     );
@@ -33,7 +37,6 @@ export class JustRemoteWebProvider implements SiteProvider {
   async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
       location: await optionalLocator(page, this.getConfig().selectors.location),
-      length: await optionalLocator(page, this.getConfig().selectors.length),
       description: await optionalLocator(page, this.getConfig().selectors.description, DESCRIPTION_TRANSFORMER),
     };
   }

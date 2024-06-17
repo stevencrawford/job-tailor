@@ -28,7 +28,7 @@ export class LinkedinWebProvider implements SiteProvider {
     return Promise.resolve(null);
   }
 
-  getListPageContent(page: Page): Promise<Array<JobAttributesRequired | JobAttributes>> {
+  getListPageContent(page: Page): Promise<Array<JobAttributes>> {
     return Promise.resolve([]);
   }
 

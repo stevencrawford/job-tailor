@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Locator, Page } from '@playwright/test';
-import { optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
+import { MULTI_TEXT_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
 import { subDays, subHours, subMinutes, subMonths, subSeconds, subWeeks } from 'date-fns';
-import { JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
-import { WebCollectorConfig } from '../schema/web-config.schema';
+import { JobAttributes, JobAttributesOptional } from '../../../interfaces/job.interface';
+import { WebCollectorConfig, webConfigSchema } from '../schema/web-config.schema';
 import { SiteProvider } from './site-provider.interface';
+import arcDevConfigJson from '../config/arc-dev.config.json';
 
 @Injectable()
 export class ArcDevWebProvider implements SiteProvider {
   readonly _domain = 'arc.dev';
   readonly _supportedUrls = ['/remote-jobs'];
 
-  async getListPageContent(page: Page): Promise<JobAttributesRequired[]> {
+  async getListPageContent(page: Page): Promise<Array<JobAttributes>> {
     const jobRows = await page.locator('div[class*="external-job-list"] >* div[class*="job-card"]').all();
     return Promise.all(
-      jobRows.map(async (row): Promise<JobAttributesRequired> => {
+      jobRows.map(async (row): Promise<JobAttributes> => {
         const link = row.locator('a.job-title');
         const title = await optionalLocator(row, 'a.job-title', TRIM_TRANSFORMER);
         const company = await optionalLocator(row, 'a.company-name', TRIM_TRANSFORMER);
+        const tags = await optionalLocator(row, 'a.category', MULTI_TEXT_TRANSFORMER(','));
         const timestamp = await optionalLocator(row, 'div.additional-info > span', RELATIVE_DATE_TRANSFORMER);
         return {
           source: this._domain,
@@ -25,6 +27,7 @@ export class ArcDevWebProvider implements SiteProvider {
           url: new URL(`https://${this._domain}/${await link.getAttribute('href')}`).toString(),
           company,
           timestamp,
+          tags,
         };
       }),
     );
@@ -33,27 +36,12 @@ export class ArcDevWebProvider implements SiteProvider {
   async getDetailPageContent(page: Page): Promise<JobAttributesOptional> {
     return {
       location: await optionalLocator(page, this.getConfig().selectors.location),
-      length: await optionalLocator(page, this.getConfig().selectors.length),
       description: await optionalLocator(page, this.getConfig().selectors.description),
     };
   }
 
   getConfig(): WebCollectorConfig {
-    return {
-      selectors: {
-        title: '.job-title',
-        location: '',
-        company: '.company-name',
-        compensation: '',
-        length: '',
-        roleType: '',
-        description: 'div[aria-label="job-detail-content"]',
-      },
-      staleJobThreshold: {
-        value: 7,
-        unit: 'day',
-      },
-    };
+    return webConfigSchema.parse(arcDevConfigJson);
   }
 
 }

@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@libs/nestjs-libraries/*": ["libs/nestjs-libraries/src/*"]
+      "@/shared/frontend/ui-shadcn": ["shared/frontend/ui-shadcn/src/index.ts"],
+      "@/shared/frontend/ui-shadcn/*": ["shared/frontend/ui-shadcn/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

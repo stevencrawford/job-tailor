@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/shared/frontend/ui-shadcn": ["shared/frontend/ui-shadcn/src/index.ts"],
+      "@/shared/frontend/ui-shadcn/*": ["shared/frontend/ui-shadcn/src/*"]
+    }
+  }
+}

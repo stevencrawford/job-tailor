@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "jsx": "preserve",
     "allowJs": true,
     "esModuleInterop": true,
@@ -19,7 +20,12 @@
     "types": [
       "jest",
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/shared/frontend/ui-shadcn": ["./../../shared/frontend/ui-shadcn/src/index.ts"],
+      "@/shared/frontend/ui-shadcn/*": ["./../../shared/frontend/ui-shadcn/src/*"]
+    }
   },
   "include": [
     "**/*.ts",

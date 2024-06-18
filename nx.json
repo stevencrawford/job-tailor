@@ -2,10 +2,7 @@
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -38,10 +35,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": [
-        "apps/backend-e2e/**/*",
-        "apps/frontend-e2e/**/*"
-      ]
+      "exclude": ["apps/backend-e2e/**/*", "apps/frontend-e2e/**/*"]
     },
     {
       "plugin": "@nx/next/plugin",
@@ -62,9 +56,12 @@
   "generators": {
     "@nx/next": {
       "application": {
-        "style": "tailwind",
+        "style": "css",
         "linter": "eslint"
       }
+    },
+    "@nx/react": {
+      "library": {}
     }
   }
 }

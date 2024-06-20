@@ -20,7 +20,7 @@ export class ArcDevWebProvider implements SiteProvider {
         const title = await optionalLocator(row, 'a.job-title', TRIM_TRANSFORMER);
         const company = await optionalLocator(row, 'a.company-name', TRIM_TRANSFORMER);
         const tags = await optionalLocator(row, 'a.category', MULTI_TEXT_TRANSFORMER(','));
-        const timestamp = await optionalLocator(row, 'div.additional-info > span', RELATIVE_DATE_TRANSFORMER);
+        const timestamp = await optionalLocator(row, 'div.additional-info', RELATIVE_DATE_TRANSFORMER);
         return {
           source: this._domain,
           title,
@@ -50,10 +50,10 @@ export class ArcDevWebProvider implements SiteProvider {
 
 const RELATIVE_DATE_TRANSFORMER = async (element: Locator): Promise<number> => {
   const relativeDateString = await element.textContent();
-  const now = new Date();
   const [value, unit] = relativeDateString.trim().split(' ');
   const numericValue = isNaN(parseInt(value, 10)) ? 1 : parseInt(value, 10);
 
+  const now = new Date();
   if (!unit) {
     return now.getTime();
   }

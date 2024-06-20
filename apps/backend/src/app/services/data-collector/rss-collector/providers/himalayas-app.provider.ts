@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IJobDispatcher } from '../../data-collector.interface';
-import { JobAttributes } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '../../../interfaces/job.interface';
 import { IDataProvider } from '../../data-provider.interface';
 import { RssParserCrawler } from '../rss-parser-crawler';
 import { getDomain } from '../../../../utils/url.utils';
@@ -34,8 +34,10 @@ export class HimalayasAppRssProvider implements IDataProvider<RssParserCrawler> 
           source: this._identifier,
         }));
 
-        const jobsToProcess = jobListings.filter((job) =>
-          diffInUnitOfTime(job.timestamp, options.lastRun) > 0);
+        const jobsToProcess = jobListings.filter((job: JobAttributes) => {
+          const isStale = diffInUnitOfTime(job.timestamp, options.lastRun) > 0;
+          return !isStale;
+        });
 
         dispatcher.dispatch({
           collectorConfig: {

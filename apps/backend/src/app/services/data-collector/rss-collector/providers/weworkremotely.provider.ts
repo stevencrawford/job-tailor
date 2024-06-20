@@ -35,9 +35,10 @@ export class WeWorkRemotelyProvider implements IDataProvider<RssParserCrawler> {
           source: this._identifier,
         }));
 
-        const jobsToProcess = jobListings.filter((job) =>
-          diffInUnitOfTime(job.timestamp, options.lastRun) > 0);
-
+        const jobsToProcess = jobListings.filter((job: JobAttributes) => {
+          const isStale = diffInUnitOfTime(job.timestamp, options.lastRun) > 0;
+          return !isStale;
+        });
         dispatcher.dispatch({
           collectorConfig: {
             name: this._identifier,

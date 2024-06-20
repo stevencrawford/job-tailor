@@ -8,6 +8,8 @@ import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-colle
 import { ProviderFactory } from '../common/provider.factory';
 import { RssParserCrawler } from './rss-parser-crawler';
 import { BaseCollectorService } from '../common/base-collector.service';
+import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import ms from 'ms';
 
 @Injectable()
 export class RssCollectorService extends BaseCollectorService<RssParserCrawler> {
@@ -15,7 +17,7 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
 
   constructor(
     protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
-    @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
@@ -34,7 +36,12 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
 
     if (rssProvider.hasSupport(config.url)) {
       const rssCrawler = rssProvider.initialize(this._bullQueueDispatcher);
-      await rssCrawler.run(config.url);
+      await rssCrawler.run(
+        config.url,
+        {
+          // Wrapping in Date() required due to BullMQ serialization
+          lastRun: collectorConfig.lastRun ?? new Date(ms('48 hours')).getTime(),
+        });
     } else {
       throw new UnsupportedUrlError(`"${config.url}" not supported by ${rssProvider._identifier}`);
     }

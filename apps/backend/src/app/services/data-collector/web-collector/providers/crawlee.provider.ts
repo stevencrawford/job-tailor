@@ -1,13 +1,11 @@
 import { defaultCrawlerOptions } from '../config/crawlee.defaults';
 import { PlaywrightCrawler, RobotsFile } from 'crawlee';
-import { timestampDiff } from '../../../../utils/date.utils';
+import { diffInUnitOfTime } from '../../../../utils/date.utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { IDataCollectorConfig, IJobDispatcher } from '../../data-collector.interface';
 import { JobAttributes, JobAttributesRequired } from '../../../interfaces/job.interface';
 import { IDataProvider } from '../../data-provider.interface';
 import { SiteProviderFactory } from '../sites/site-provider.factory';
-import { getDomain } from '../../../../utils/url.utils';
-import * as url from 'node:url';
 
 @Injectable()
 export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {
@@ -57,7 +55,7 @@ export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {
           const robotsTxt = await RobotsFile.find(`https://${siteProvider._domain}/robots.txt`);
           const jobsToProcess = jobs.filter((job: Pick<JobAttributesRequired, 'url' | 'timestamp'>) => {
             const isAllowed = robotsTxt.isAllowed(job.url);
-            const isStale = timestampDiff(job.timestamp, siteConfig.staleJobThreshold.unit) > siteConfig.staleJobThreshold.value;
+            const isStale = diffInUnitOfTime(job.timestamp, collectorConfig.lastRun) > 0;
             return isAllowed && !isStale;
           });
 
@@ -67,7 +65,7 @@ export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {
           });
 
           if (siteConfig.paginationSelector &&
-            timestampDiff(oldestJobTimestamp, siteConfig.staleJobThreshold.unit) < siteConfig.staleJobThreshold.value
+            diffInUnitOfTime(oldestJobTimestamp, collectorConfig.lastRun) > 0
             && jobsToProcess.length == jobs.length) {
             await enqueueLinks({
               selector: siteConfig.paginationSelector,

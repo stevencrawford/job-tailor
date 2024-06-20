@@ -6,9 +6,5 @@
     "compensation": "",
     "roleType": "",
     "description": "div[aria-label=\"job-detail-content\"]"
-  },
-  "staleJobThreshold": {
-    "value": 7,
-    "unit": "day"
   }
 }

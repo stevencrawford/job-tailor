@@ -49,6 +49,7 @@ export class DataCollectorService {
         return {
           data: {
             ...collector,
+            lastRun: collector.lastRun?.getTime() ?? new Date().getTime(),
           } as IDataCollectorConfig,
           name: `refresh-${collector.name}`,
         };

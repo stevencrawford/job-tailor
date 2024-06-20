@@ -5,6 +5,7 @@
   "scripts": {
     "build": "nx run-many --target=build --projects=frontend,backend --parallel=2 --skip-nx-cache",
     "dev": "rm -rf storage && nx run-many --target=serve --projects=frontend,backend --parallel=2 --skip-nx-cache",
+    "backend:build": "npx nx run backend:build --skip-nx-cache",
     "backend:serve": "rm -rf storage && nx run backend:serve:development --skip-nx-cache",
     "frontend:serve": "npx nx run frontend:serve:development --skip-nx-cache",
     "frontend:build": "npx nx run frontend:build",

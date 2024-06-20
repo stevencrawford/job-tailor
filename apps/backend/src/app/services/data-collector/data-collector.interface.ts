@@ -4,7 +4,7 @@ export interface IDataCollectorConfig {
   name: string;
   type: 'WEB' | 'API' | 'RSS';
   config: object;
-  lastRun?: Date;
+  lastRun?: number;
 }
 
 export interface IDataCollectorService {

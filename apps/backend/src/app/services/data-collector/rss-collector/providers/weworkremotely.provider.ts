@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IJobDispatcher } from '../../data-collector.interface';
 import { JobAttributes } from '../../../interfaces/job.interface';
 import { IDataProvider } from '../../data-provider.interface';
 import { RssParserCrawler } from '../rss-parser-crawler';
 import { getDomain } from '../../../../utils/url.utils';
+import { diffInUnitOfTime } from '../../../../utils/date.utils';
 
 @Injectable()
 export class WeWorkRemotelyProvider implements IDataProvider<RssParserCrawler> {
+  readonly _logger = new Logger(WeWorkRemotelyProvider.name);
   readonly _identifier = 'weworkremotely.com';
 
   hasSupport(url: string): boolean {
@@ -19,7 +21,7 @@ export class WeWorkRemotelyProvider implements IDataProvider<RssParserCrawler> {
       customFields: {
         item: ['description', 'category', 'type', 'region'],
       },
-      responseHandler: async (response) => {
+      responseHandler: async (response, options) => {
         const items = response.items;
         const jobListings: JobAttributes[] = items.map((item) => ({
           title: item.title.split(':').at(1).trim(),
@@ -33,11 +35,14 @@ export class WeWorkRemotelyProvider implements IDataProvider<RssParserCrawler> {
           source: this._identifier,
         }));
 
+        const jobsToProcess = jobListings.filter((job) =>
+          diffInUnitOfTime(job.timestamp, options.lastRun) > 0);
+
         dispatcher.dispatch({
           collectorConfig: {
             name: this._identifier,
           },
-          jobListings,
+          jobListings: jobsToProcess
         });
       },
     });

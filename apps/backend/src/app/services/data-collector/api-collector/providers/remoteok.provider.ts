@@ -6,6 +6,7 @@ import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.inter
 import { z } from 'zod';
 import { AxiosResponse } from 'axios';
 import { getDomain } from '../../../../utils/url.utils';
+import { diffInUnitOfTime } from '../../../../utils/date.utils';
 
 @Injectable()
 export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
@@ -19,7 +20,7 @@ export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
 
   initialize(dispatcher: IJobDispatcher): AxiosApiCrawler {
     return new AxiosApiCrawler({
-      responseHandler: async (response: AxiosResponse<ApiResponse>) => {
+      responseHandler: async (response: AxiosResponse<ApiResponse>, options) => {
         // skip the first element as it is the legal notice
         const jobs = response.data.slice(1) as JobData[];
         const jobListings: JobAttributes[] = jobs.map((job: JobData) => ({
@@ -35,11 +36,14 @@ export class RemoteOkApiProvider implements IDataProvider<AxiosApiCrawler> {
           source: this._identifier,
         }));
 
+        const jobsToProcess = jobListings.filter((job) =>
+          diffInUnitOfTime(job.timestamp, options.lastRun) > 0);
+
         dispatcher.dispatch({
           collectorConfig: {
             name: this._identifier,
           },
-          jobListings,
+          jobListings: jobsToProcess,
         });
       },
     });

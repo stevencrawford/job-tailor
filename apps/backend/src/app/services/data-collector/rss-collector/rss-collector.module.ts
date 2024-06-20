@@ -7,11 +7,12 @@ import { HimalayasAppRssProvider } from './providers/himalayas-app.provider';
 import { RssParserCrawler } from './rss-parser-crawler';
 import { ProviderFactory } from '../common/provider.factory';
 import { WeWorkRemotelyProvider } from './providers/weworkremotely.provider';
+import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'data-collector.job',
+      name: DATA_COLLECTOR_JOB,
       defaultJobOptions
     }),
   ],

@@ -6,9 +6,5 @@
     "location": "turbo-frame[id=\"job\"] .posting-category.location",
     "roleType": "turbo-frame[id=\"job\"] .posting-category.commitment",
     "description": "turbo-frame[id=\"job\"] .mx-auto"
-  },
-  "staleJobThreshold": {
-    "value": 6,
-    "unit": "hour"
   }
 }

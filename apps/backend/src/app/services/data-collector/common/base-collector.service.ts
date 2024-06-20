@@ -27,6 +27,8 @@ export abstract class BaseCollectorService<T> implements IDataCollectorService {
         // Enrich:Categorize
         // Enrich:Summarize
         // Match:Candidates
+        this._logger.log(`Dispatching ${payload.jobListings.length} jobs for ${payload.collectorConfig.name}`);
+
         await this._dataCollectorJobQueue.add(
           `${payload.collectorConfig.type}-collector-${payload.collectorConfig.name}`,
           {

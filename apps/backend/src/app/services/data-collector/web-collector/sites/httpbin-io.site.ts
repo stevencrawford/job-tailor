@@ -25,10 +25,6 @@ export class HttpBinWebProvider implements SiteProvider {
         title: '',
         description: '',
       },
-      staleJobThreshold: {
-        value: 1,
-        unit: 'day',
-      },
     };
   }
 }

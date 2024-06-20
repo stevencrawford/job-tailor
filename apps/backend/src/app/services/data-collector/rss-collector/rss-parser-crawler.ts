@@ -3,7 +3,11 @@ import Parser, { Output } from 'rss-parser';
 
 export interface RssParserCrawlerOptions {
   customFields?:  Parser.CustomFields<string, any>;
-  responseHandler?: (response: ({ [p: string]: any } & Output<string>)) => void;
+  responseHandler?: (response: ({ [p: string]: any } & Output<string>), options?: RssParserCrawlerRunOptions) => void;
+}
+
+export interface RssParserCrawlerRunOptions {
+  lastRun: number;
 }
 
 export class RssParserCrawler {
@@ -12,7 +16,7 @@ export class RssParserCrawler {
   constructor(private readonly options: RssParserCrawlerOptions) {
   }
 
-  async run(request: string) {
+  async run(request: string, options: RssParserCrawlerRunOptions) {
     const customFields = this.options.customFields;
     const parser = new Parser({
       customFields,
@@ -21,7 +25,7 @@ export class RssParserCrawler {
     try {
       const feed = await parser.parseURL(request);
       if (this.options.responseHandler) {
-        this.options.responseHandler(feed);
+        this.options.responseHandler(feed, options);
       }
     } catch (err) {
       this._logger.error(`Error calling ${request}: ${err.message}`);

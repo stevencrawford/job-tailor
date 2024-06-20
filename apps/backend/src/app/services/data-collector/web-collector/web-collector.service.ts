@@ -9,6 +9,8 @@ import { BaseCollectorService } from '../common/base-collector.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProviderFactory } from '../common/provider.factory';
 import { CrawleeProvider } from './providers/crawlee.provider';
+import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import ms from 'ms';
 
 @Injectable()
 export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler> {
@@ -17,7 +19,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
 
   constructor(
     protected readonly providerFactory: ProviderFactory<PlaywrightCrawler>,
-    @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
@@ -33,30 +35,16 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
       throw new UnknownCollectorError(`Connector "${collectorConfig.name}" is not supported.`);
     }
 
-    // // 2. Find all User.SearchCriteria TODO: filter based on Connector support JobCategories
-    // const userSearches = await this._prismaService.userSearch.findMany();
-    //
-    // // 3. Iterate through the userSearches and build unique set of urls.
-    // const uniqueConnectorUrls: Set<string> = new Set(userSearches.map(config => {
-    //   const { jobCategory, region, jobLevel } = config;
-    //   return handler.fetchUrl({ jobCategory, jobLevel, region });
-    // }));
+    // TODO: Build search URLs based on registered users search preferences
 
-    // const sources: Source[] = [];
-    // uniqueConnectorUrls.forEach(url => {
-    //   sources.push({
-    //     url,
-    //     label: 'LIST',
-    //     userData: {
-    //       collectorConfig,
-    //     }
-    //   });
-    // });
     const sources: Source[] = [{
       url: collectorConfig.config['url'],
       label: 'LIST',
       userData: {
-        collectorConfig,
+        collectorConfig: {
+          ...collectorConfig,
+          lastRun: collectorConfig.lastRun ?? new Date(ms('48 hours')).getTime(),
+        },
       },
     }];
 
@@ -69,7 +57,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
 
       if (stats.requestsFailed > 0) {
         // TODO: implement this better
-        throw new WebCollectorError(`Error while crawling ${collectorConfig.name}: ${stats}`);
+        throw new WebCollectorError(`Error while crawling ${collectorConfig.name}: ${JSON.stringify(stats)}`);
       }
     }
 

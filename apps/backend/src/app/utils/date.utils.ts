@@ -1,7 +1,4 @@
-export function timestampDiff(timestamp: number, unitOfTime: 'day' | 'hour' | 'minute' | 'second' | 'millisecond'): number {
-  const now = new Date();
-  const dateToCheck = new Date(timestamp);
-
+export function diffInUnitOfTime(now: number, then: number = new Date().getTime(), unitOfTime: 'day' | 'hour' | 'minute' | 'second' | 'millisecond' = 'millisecond'): number {
   let msInInterval: number;
   switch (unitOfTime) {
     case 'day':
@@ -23,5 +20,5 @@ export function timestampDiff(timestamp: number, unitOfTime: 'day' | 'hour' | 'm
       throw new Error('Invalid unit of time');
   }
 
-  return Math.floor((now.getTime() - dateToCheck.getTime()) / msInInterval);
+  return Math.floor((then - now) / msInInterval);
 }

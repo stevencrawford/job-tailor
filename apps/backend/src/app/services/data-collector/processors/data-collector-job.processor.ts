@@ -121,7 +121,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
       return await this._jobEnricherFlowProducer.add({
         name: `enrich-jobs:${collectAppConfig.name}`,
         queueName: JOBS_ENRICH,
-        children: [categorizeJobs, summarizeJobs],
+        children: [categorizeJobs],
         opts: {
           failParentOnFailure: true,
         },

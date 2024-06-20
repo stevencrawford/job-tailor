@@ -11,10 +11,6 @@ export const webConfigSchema = z.object({
     roleType: z.string().optional(),
   }),
   paginationSelector: z.string().optional(),
-  staleJobThreshold: z.object({
-    value: z.number(),
-    unit: z.enum(['day', 'hour', 'minute', 'second']),
-  }),
 });
 
 export type WebCollectorConfig = z.infer<typeof webConfigSchema>;

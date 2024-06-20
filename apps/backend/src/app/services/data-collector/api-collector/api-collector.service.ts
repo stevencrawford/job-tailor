@@ -8,6 +8,8 @@ import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-colle
 import { AxiosApiCrawler } from './axios-api-crawler';
 import { ProviderFactory } from '../common/provider.factory';
 import { BaseCollectorService } from '../common/base-collector.service';
+import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import ms from 'ms';
 
 @Injectable()
 export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
@@ -15,7 +17,7 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
 
   constructor(
     protected readonly  providerFactory: ProviderFactory<AxiosApiCrawler>,
-    @InjectQueue('data-collector.job') protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,
@@ -33,7 +35,9 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
 
     if (apiProvider.hasSupport(config.url)) {
       const apiCrawler = apiProvider.initialize(this._bullQueueDispatcher);
-      await apiCrawler.run([config.url]);
+      await apiCrawler.run([config.url], {
+        lastRun: collectorConfig.lastRun ?? new Date(ms('48 hours')).getTime(),
+      });
     } else {
       throw new UnsupportedUrlError(`"${config.url}" not supported by ${apiProvider._identifier}`);
     }

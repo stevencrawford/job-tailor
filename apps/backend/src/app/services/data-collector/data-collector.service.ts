@@ -41,6 +41,7 @@ export class DataCollectorService {
     const collectors = await this._prismaService.connector.findMany({
       where: {
         status: 'ONLINE',
+        healthy: true,
         frequency,
       },
     });

@@ -1,6 +1,5 @@
 import { defaultCrawlerOptions } from '../config/crawlee.defaults';
 import { PlaywrightCrawler, RobotsFile } from 'crawlee';
-import { diffInUnitOfTime } from '@/app/utils/date.utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { IDataCollectorConfig, IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
 import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
@@ -55,7 +54,7 @@ export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {
           const robotsTxt = await RobotsFile.find(`https://${siteProvider._domain}/robots.txt`);
           const jobsToProcess = jobs.filter((job: Pick<JobAttributesRequired, 'url' | 'timestamp'>) => {
             const isAllowed = robotsTxt.isAllowed(job.url);
-            const isStale = diffInUnitOfTime(job.timestamp, collectorConfig.lastRun) > 0;
+            const isStale = job.timestamp <= collectorConfig.lastRun;
             return isAllowed && !isStale;
           });
 
@@ -65,7 +64,7 @@ export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {
           });
 
           if (siteConfig.paginationSelector &&
-            diffInUnitOfTime(oldestJobTimestamp, collectorConfig.lastRun) > 0
+            oldestJobTimestamp <= collectorConfig.lastRun
             && jobsToProcess.length == jobs.length) {
             await enqueueLinks({
               selector: siteConfig.paginationSelector,

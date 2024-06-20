@@ -1,4 +1,5 @@
-export function diffInUnitOfTime(now: number, then: number = new Date().getTime(), unitOfTime: 'day' | 'hour' | 'minute' | 'second' | 'millisecond' = 'millisecond'): number {
+export function diffInUnitOfTime(then: number, unitOfTime: 'day' | 'hour' | 'minute' | 'second' | 'millisecond' = 'millisecond'): number {
+  const now = new Date().getTime();
   let msInInterval: number;
   switch (unitOfTime) {
     case 'day':
@@ -20,5 +21,5 @@ export function diffInUnitOfTime(now: number, then: number = new Date().getTime(
       throw new Error('Invalid unit of time');
   }
 
-  return Math.floor((then - now) / msInInterval);
+  return Math.floor((now - then) / msInInterval);
 }

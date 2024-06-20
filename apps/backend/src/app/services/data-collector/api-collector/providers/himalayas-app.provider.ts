@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { IDataProvider } from '@/app/services/data-collector/data-provider.interface';
 import { AxiosResponse } from 'axios';
 import { getDomain } from '@/app/utils/url.utils';
-import { diffInUnitOfTime } from '@/app/utils/date.utils';
 
 @Injectable()
 export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
@@ -35,10 +34,7 @@ export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {
           source: this._identifier,
         }));
 
-        const jobsToProcess = jobListings.filter((job: JobAttributes) => {
-          const isStale = diffInUnitOfTime(job.timestamp, options.lastRun) > 0;
-          return !isStale;
-        });
+        const jobsToProcess = jobListings.filter((job: JobAttributes) => job.timestamp > options.lastRun);
 
         dispatcher.dispatch({
           collectorConfig: {

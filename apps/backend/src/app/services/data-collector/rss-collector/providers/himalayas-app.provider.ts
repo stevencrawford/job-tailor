@@ -4,7 +4,6 @@ import { JobAttributes } from '@/app/services/interfaces/job.interface';
 import { IDataProvider } from '@/app/services/data-collector/data-provider.interface';
 import { RssParserCrawler } from '@/app/services/data-collector/rss-collector/rss-parser-crawler';
 import { getDomain } from '@/app/utils/url.utils';
-import { diffInUnitOfTime } from '@/app/utils/date.utils';
 
 @Injectable()
 export class HimalayasAppRssProvider implements IDataProvider<RssParserCrawler> {
@@ -34,10 +33,7 @@ export class HimalayasAppRssProvider implements IDataProvider<RssParserCrawler> 
           source: this._identifier,
         }));
 
-        const jobsToProcess = jobListings.filter((job: JobAttributes) => {
-          const isStale = diffInUnitOfTime(job.timestamp, options.lastRun) > 0;
-          return !isStale;
-        });
+        const jobsToProcess = jobListings.filter((job: JobAttributes) => job.timestamp > options.lastRun);
 
         dispatcher.dispatch({
           collectorConfig: {

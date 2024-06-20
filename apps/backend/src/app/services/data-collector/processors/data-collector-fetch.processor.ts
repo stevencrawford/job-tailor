@@ -5,7 +5,7 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
 import { DataCollectorFactory } from '../data-collector.factory';
-import { DATA_COLLECTOR_FETCH } from '../../common/queue.constants';
+import { DATA_COLLECTOR_FETCH } from '@/app/services/common/queue.constants';
 
 @Processor(DATA_COLLECTOR_FETCH, { concurrency: 5 })
 export class DataCollectorFetchProcessor extends WorkerHost {
@@ -18,10 +18,11 @@ export class DataCollectorFetchProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<IDataCollectorConfig>): Promise<any> {
+  async process(job: Job<IDataCollectorConfig>): Promise<number | void> {
     this._logger.log(`Processing job ${job.id} of type ${job.name} with data ${JSON.stringify(job.data)}`);
 
-    return this.processJobWithErrorHandler(job).catch(async (err) => {
+    return this.processJobWithErrorHandler(job)
+      .catch(async (err) => {
       // TODO: handle errors
       await this._dataCollectorService.updateLastRun(job.data, err);
     });
@@ -29,7 +30,7 @@ export class DataCollectorFetchProcessor extends WorkerHost {
 
   private async processJobWithErrorHandler(
     job: Job<IDataCollectorConfig>,
-  ): Promise<unknown> {
+  ): Promise<number> {
     try {
       // Work on job
       const result = await this.handleJob(job);

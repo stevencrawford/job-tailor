@@ -4,7 +4,7 @@ import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError, WebCollectorError } from '../errors/data-collector.error';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
 import { BaseCollectorService } from '../common/base-collector.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProviderFactory } from '../common/provider.factory';

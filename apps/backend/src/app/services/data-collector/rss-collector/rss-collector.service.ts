@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { IDataCollectorConfig } from '../data-collector.interface';
+import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { RssCollectorConfig, rssConfigSchema } from './schema/rss-config.schema';
-import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
-import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-collector.error';
-import { ProviderFactory } from '../common/provider.factory';
+import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
+import { UnknownCollectorError, UnsupportedUrlError } from '@/app/services/data-collector/errors/data-collector.error';
+import { ProviderFactory } from '@/app/services/data-collector/common/provider.factory';
 import { RssParserCrawler } from './rss-parser-crawler';
-import { BaseCollectorService } from '../common/base-collector.service';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import { BaseCollectorService } from '@/app/services/data-collector/common/base-collector.service';
+import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 import ms from 'ms';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { JobAttributes, JobAttributesRequired } from '../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
 
 export interface IDataCollectorConfig {
   name: string;

@@ -10,7 +10,6 @@ export const [
   JOBS_CATEGORIZE,
 ] = enrichQueues;
 
-
 const dataCollectorQueues = [
   'data-collector.fetch',
   'data-collector.job',

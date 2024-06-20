@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ApiCollectorService } from './api-collector.service';
 import { BullModule } from '@nestjs/bullmq';
-import { defaultJobOptions } from '../../common/default-jobs-options';
+import { defaultJobOptions } from '@/app/services/common/default-jobs-options';
 import { HimalayasAppApiProvider } from './providers/himalayas-app.provider';
 import { RemoteOkApiProvider } from './providers/remoteok.provider';
 import { IDataProvider } from '../data-provider.interface';
 import { AxiosApiCrawler } from './axios-api-crawler';
-import { ProviderFactory } from '../common/provider.factory';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import { ProviderFactory } from '@/app/services/data-collector/common/provider.factory';
+import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 
 @Module({
   imports: [

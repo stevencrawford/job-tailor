@@ -5,19 +5,23 @@ import {
   JobCategory,
   JobLevel,
   JobSummaryAttributes,
-} from '../../interfaces/job.interface';
+} from '@/app/services/interfaces/job.interface';
 import { ConfigService } from '@nestjs/config';
-import { parseJSON } from '../../../utils/json.utils';
+import { parseJSON } from '@/app/utils/json.utils';
 import { CategorizedJob, Classification, LlmProvider, SummarizedJob } from './llm-provider.interface';
 import Groq from 'groq-sdk';
-import { categorizeResponseSchema, classifyResponseSchema, summarizeJobSchema } from '../schema/llm-response.schema';
+import {
+  categorizeResponseSchema,
+  classifyResponseSchema,
+  summarizeJobSchema,
+} from '@/app/services/llm/schema/llm-response.schema';
 import { SupportProviders } from './llm-provider.factory';
-import { UserExperienceAttributes } from '../../interfaces/user.interface';
+import { UserExperienceAttributes } from '@/app/services/interfaces/user.interface';
 import {
   CATEGORIZE_ASSISTANT_MESSAGE,
   getJobMatchAssistantMessage,
   SUMMARIZE_ASSISTANT_MESSAGE,
-} from '../llm.messages';
+} from '@/app/services/llm/llm.messages';
 
 const GROQ_MODEL_LLAMA3_70B = 'llama3-70b-8192';
 

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@songkeys/nestjs-redis';
-import { configSchema } from './app/configuration/config.schema';
-import config, { Config, RedisConfig } from './app/configuration/config';
-import { CronService } from './app/services/cron.service';
+import { configSchema } from '@/app/configuration/config.schema';
+import config, { Config, RedisConfig } from '@/app/configuration/config';
+import { CronService } from '@/app/services/cron.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ApiModule } from './app/api/api.module';
-import { DataCollectorModule } from './app/services/data-collector/data-collector.module';
+import { ApiModule } from '@/app/api/api.module';
+import { DataCollectorModule } from '@/app/services/data-collector/data-collector.module';
 import { BullModule } from '@nestjs/bullmq';
-import { JobCategorizeModule } from './app/services/job-categorize/job-categorize.module';
-import { JobSummarizeModule } from './app/services/job-summarize/job-summarize.module';
+import { JobCategorizeModule } from '@/app/services/job-categorize/job-categorize.module';
+import { JobSummarizeModule } from '@/app/services/job-summarize/job-summarize.module';
 
 @Module({
   imports: [

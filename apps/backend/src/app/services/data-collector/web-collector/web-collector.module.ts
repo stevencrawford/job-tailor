@@ -14,7 +14,7 @@ import { PlaywrightCrawler } from 'crawlee';
 import { IDataProvider } from '../data-provider.interface';
 import { SiteProviderFactory } from './sites/site-provider.factory';
 import { ProviderFactory } from '../common/provider.factory';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 
 @Module({
   imports: [

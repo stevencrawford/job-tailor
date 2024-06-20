@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { JobAttributes, JobAttributesOptional } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesOptional } from '@/app/services/interfaces/job.interface';
 import { WebCollectorConfig } from '../schema/web-config.schema';
 
 export interface SiteProvider {

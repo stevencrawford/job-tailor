@@ -1,8 +1,8 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { JOBS_CATEGORIZE } from '../common/queue.constants';
+import { JOBS_CATEGORIZE } from '@/app/services/common/queue.constants';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { JobAttributesRequired, JobWithId } from '../interfaces/job.interface';
+import { JobAttributesRequired, JobWithId } from '@/app/services/interfaces/job.interface';
 import { JobCategorizeService } from './job-categorize.service';
 import Bottleneck from 'bottleneck';
 

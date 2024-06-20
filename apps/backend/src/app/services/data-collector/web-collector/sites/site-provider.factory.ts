@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SiteProvider } from './site-provider.interface';
-import { getDomain, getPath } from '../../../../utils/url.utils';
+import { getDomain, getPath } from '@/app/utils/url.utils';
 
 @Injectable()
 export class SiteProviderFactory {

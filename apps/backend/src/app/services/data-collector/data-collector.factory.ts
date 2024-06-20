@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IDataCollectorService } from './data-collector.interface';
+import { IDataCollectorService } from '@/app/services/data-collector/data-collector.interface';
 
 @Injectable()
 export class DataCollectorFactory {

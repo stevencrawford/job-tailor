@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Locator, Page } from '@playwright/test';
 import justRemoteConfigJson from '../config/justremote.config.json';
 import { MULTI_TEXT_TRANSFORMER, optionalLocator, TRIM_TRANSFORMER } from '../utils/crawlee.utils';
-import { JobAttributes, JobAttributesOptional } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesOptional } from '@/app/services/interfaces/job.interface';
 import { webConfigSchema } from '../schema/web-config.schema';
 import { SiteProvider } from './site-provider.interface';
 

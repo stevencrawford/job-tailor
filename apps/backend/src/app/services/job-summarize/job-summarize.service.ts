@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { JobAttributes, JobWithId } from '../interfaces/job.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import { LlmProviderFactory } from '../llm/providers/llm-provider.factory';
+import { JobAttributes, JobWithId } from '@/app/services/interfaces/job.interface';
+import { PrismaService } from '@/app/services/prisma/prisma.service';
+import { LlmProviderFactory } from '@/app/services/llm/providers/llm-provider.factory';
 
 @Injectable()
 export class JobSummarizeService {

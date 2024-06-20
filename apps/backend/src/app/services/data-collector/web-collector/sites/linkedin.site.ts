@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { RobotsFile } from 'crawlee';
-import { InjectRedis } from '@songkeys/nestjs-redis';
-import Redis from 'ioredis';
 import { SiteProvider } from './site-provider.interface';
 import { Page } from '@playwright/test';
-import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesOptional } from '@/app/services/interfaces/job.interface';
 import { WebCollectorConfig } from '../schema/web-config.schema';
 
 @Injectable()
@@ -15,7 +13,6 @@ export class LinkedinWebProvider implements SiteProvider {
   private _robotsFile: RobotsFile;
 
   constructor(
-    @InjectRedis() private readonly _redis: Redis,
   ) {
     this.initializeRobotsFile();
   }

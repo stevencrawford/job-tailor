@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IJobDispatcher } from '../../data-collector.interface';
-import { JobAttributes, JobAttributesRequired } from '../../../interfaces/job.interface';
-import { IDataProvider } from '../../data-provider.interface';
-import { RssParserCrawler } from '../rss-parser-crawler';
-import { getDomain } from '../../../../utils/url.utils';
-import { diffInUnitOfTime } from '../../../../utils/date.utils';
+import { IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
+import { JobAttributes } from '@/app/services/interfaces/job.interface';
+import { IDataProvider } from '@/app/services/data-collector/data-provider.interface';
+import { RssParserCrawler } from '@/app/services/data-collector/rss-collector/rss-parser-crawler';
+import { getDomain } from '@/app/utils/url.utils';
+import { diffInUnitOfTime } from '@/app/utils/date.utils';
 
 @Injectable()
 export class HimalayasAppRssProvider implements IDataProvider<RssParserCrawler> {

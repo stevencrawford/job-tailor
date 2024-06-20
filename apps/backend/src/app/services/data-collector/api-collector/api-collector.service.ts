@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { IDataCollectorConfig } from '../data-collector.interface';
-import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
 import { ApiCollectorConfig, apiConfigSchema } from './schema/api-config.schema';
-import { UnknownCollectorError, UnsupportedUrlError } from '../errors/data-collector.error';
+import { UnknownCollectorError, UnsupportedUrlError } from '@/app/services/data-collector/errors/data-collector.error';
 import { AxiosApiCrawler } from './axios-api-crawler';
 import { ProviderFactory } from '../common/provider.factory';
 import { BaseCollectorService } from '../common/base-collector.service';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 import ms from 'ms';
 
 @Injectable()

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { IJobDispatcher } from '../../data-collector.interface';
+import { IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
 import { AxiosApiCrawler } from '../axios-api-crawler';
-import { CURRENCY_FORMATTER, JobAttributes } from '../../../interfaces/job.interface';
+import { CURRENCY_FORMATTER, JobAttributes } from '@/app/services/interfaces/job.interface';
 import { z } from 'zod';
-import { IDataProvider } from '../../data-provider.interface';
+import { IDataProvider } from '@/app/services/data-collector/data-provider.interface';
 import { AxiosResponse } from 'axios';
-import { getDomain } from '../../../../utils/url.utils';
-import { diffInUnitOfTime } from '../../../../utils/date.utils';
+import { getDomain } from '@/app/utils/url.utils';
+import { diffInUnitOfTime } from '@/app/utils/date.utils';
 
 @Injectable()
 export class HimalayasAppApiProvider implements IDataProvider<AxiosApiCrawler> {

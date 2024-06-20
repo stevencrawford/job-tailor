@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { JobsOptions, Queue } from 'bullmq';
-import { PrismaService } from '../prisma/prisma.service';
-import { IDataCollectorConfig } from './data-collector.interface';
-import { DATA_COLLECTOR_FETCH } from '../common/queue.constants';
+import { PrismaService } from '@/app/services/prisma/prisma.service';
+import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
+import { DATA_COLLECTOR_FETCH } from '@/app/services/common/queue.constants';
 
 @Injectable()
 export class DataCollectorService {

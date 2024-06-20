@@ -1,8 +1,8 @@
 import { categorizedJobSchema, classifyResponseSchema, summarizeJobSchema } from '../schema/llm-response.schema';
 import { z } from 'zod';
 import { SupportProviders } from './llm-provider.factory';
-import { JobAttributes, JobAttributesRequired, JobSummaryAttributes, JobWithId } from '../../interfaces/job.interface';
-import { UserExperienceAttributes } from '../../interfaces/user.interface';
+import { JobAttributes, JobAttributesRequired, JobSummaryAttributes, JobWithId } from '@/app/services/interfaces/job.interface';
+import { UserExperienceAttributes } from '@/app/services/interfaces/user.interface';
 
 export type Classification = z.infer<typeof classifyResponseSchema>;
 export type CategorizedJob = z.infer<typeof categorizedJobSchema>;

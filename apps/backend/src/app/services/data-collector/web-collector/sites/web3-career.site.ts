@@ -7,7 +7,7 @@ import {
 } from '../utils/crawlee.utils';
 import { Page } from '@playwright/test';
 import web3CareerConfigJson from '../config/web3-career.config.json';
-import { JobAttributes, JobAttributesOptional } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesOptional } from '@/app/services/interfaces/job.interface';
 import { webConfigSchema } from '../schema/web-config.schema';
 import { SiteProvider } from './site-provider.interface';
 

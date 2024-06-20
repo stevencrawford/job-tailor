@@ -1,4 +1,4 @@
-import { UserExperienceAttributes } from '../interfaces/user.interface';
+import { UserExperienceAttributes } from '@/app/services/interfaces/user.interface';
 
 export function getJobMatchAssistantMessage(userExperience: UserExperienceAttributes) {
   return `You are a recruitment assistant. Given the following job(s) details, rank them based on my compatibility and preferences.

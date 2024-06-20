@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JobCategorizeService } from './job-categorize.service';
-import { LlmModule } from '../llm/llm.module';
-import { PrismaModule } from '../prisma/prisma.module';
+import { LlmModule } from '@/app/services/llm/llm.module';
+import { PrismaModule } from '@/app/services/prisma/prisma.module';
 import { JobCategorizeProcessor } from './job-categorize.processor';
-import { JOBS_CATEGORIZE } from '../common/queue.constants';
+import { JOBS_CATEGORIZE } from '@/app/services/common/queue.constants';
 import { BullModule } from '@nestjs/bullmq';
-import { defaultJobOptions } from '../common/default-jobs-options';
+import { defaultJobOptions } from '@/app/services/common/default-jobs-options';
 
 @Module({
   imports: [

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { JobAttributes, JobAttributesRequired, JobSummaryAttributes } from '../../interfaces/job.interface';
+import { JobAttributes, JobAttributesRequired, JobSummaryAttributes } from '@/app/services/interfaces/job.interface';
 import { ConfigService } from '@nestjs/config';
 import { LlmProvider, CategorizedJob, Classification, SummarizedJob } from './llm-provider.interface';
 import { SupportProviders } from './llm-provider.factory';
 import OpenAI from 'openai';
-import { UserExperienceAttributes } from '../../interfaces/user.interface';
+import { UserExperienceAttributes } from '@/app/services/interfaces/user.interface';
 
 @Injectable()
 export class OpenAIProvider implements LlmProvider {

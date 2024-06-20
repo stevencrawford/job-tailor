@@ -1,15 +1,15 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { FlowJob, FlowProducer, Job } from 'bullmq';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/app/services/prisma/prisma.service';
 import { IDataCollectorConfig } from '../data-collector.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
-import { JobAttributes, JobAttributesRequired, JobWithId } from '../../interfaces/job.interface';
-import { InjectJobEnricher } from '../../common/job-enricher-producer.decorator';
+import { JobAttributes, JobAttributesRequired, JobWithId } from '@/app/services/interfaces/job.interface';
+import { InjectJobEnricher } from '@/app/services/common/job-enricher-producer.decorator';
 import { collectAppConfig } from 'next/dist/build/utils';
-import { DATA_COLLECTOR_JOB, JOBS_CATEGORIZE, JOBS_ENRICH, JOBS_SUMMARIZE } from '../../common/queue.constants';
+import { DATA_COLLECTOR_JOB, JOBS_CATEGORIZE, JOBS_ENRICH, JOBS_SUMMARIZE } from '@/app/services/common/queue.constants';
 
 @Processor(DATA_COLLECTOR_JOB, { concurrency: 10 })
 export class DataCollectorJobProcessor extends WorkerHost {
@@ -26,7 +26,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
   async process(job: Job<{
     collectorConfig: IDataCollectorConfig,
     jobListings: Array<JobAttributesRequired | JobAttributes>
-  }>): Promise<any> {
+  }>): Promise<number | void> {
     return this.processJobWithErrorHandler(job).catch((err) => {
       // TODO: handle errors
     });
@@ -34,9 +34,9 @@ export class DataCollectorJobProcessor extends WorkerHost {
 
   private async processJobWithErrorHandler(
     job: Job<{ collectorConfig: IDataCollectorConfig, jobListings: Array<JobAttributesRequired | JobAttributes> }>,
-  ): Promise<unknown> {
+  ): Promise<number> {
+    // eslint-disable-next-line no-useless-catch
     try {
-      // Work on job
       const result = await this.handleJob(job);
       return result;
     } catch (err) {
@@ -50,7 +50,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
   private async handleJob(job: Job<{
     collectorConfig: IDataCollectorConfig,
     jobListings: Array<JobAttributesRequired | JobAttributes>
-  }>): Promise<unknown> {
+  }>): Promise<number> {
 
     const jobsToEnrich: Array<(JobWithId & (JobAttributes | JobAttributesRequired))> = [];
     for (const jobListing of job.data.jobListings) {
@@ -118,7 +118,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
         },
       };
 
-      return await this._jobEnricherFlowProducer.add({
+      await this._jobEnricherFlowProducer.add({
         name: `enrich-jobs:${collectAppConfig.name}`,
         queueName: JOBS_ENRICH,
         children: [categorizeJobs],

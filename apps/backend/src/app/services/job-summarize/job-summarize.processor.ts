@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { JOBS_SUMMARIZE } from '../common/queue.constants';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { JobAttributes, JobWithId } from '../interfaces/job.interface';
+import { JobAttributes, JobWithId } from '@/app/services/interfaces/job.interface';
 import { JobSummarizeService } from './job-summarize.service';
 import Bottleneck from 'bottleneck';
 

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { LlmProviderFactory } from '../llm/providers/llm-provider.factory';
-import { CategorizedJob } from '../llm/providers/llm-provider.interface';
-import { PrismaService } from '../prisma/prisma.service';
-import { JobAttributesRequired, JobWithId } from '../interfaces/job.interface';
+import { LlmProviderFactory } from '@/app/services/llm/providers/llm-provider.factory';
+import { CategorizedJob } from '@/app/services/llm/providers/llm-provider.interface';
+import { PrismaService } from '@/app/services/prisma/prisma.service';
+import { JobAttributesRequired, JobWithId } from '@/app/services/interfaces/job.interface';
 
 @Injectable()
 export class JobCategorizeService {

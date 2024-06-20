@@ -1,4 +1,4 @@
-import { IJobDispatcher } from './data-collector.interface';
+import { IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
 
 export interface IDataProvider<T> {
   _identifier: string;

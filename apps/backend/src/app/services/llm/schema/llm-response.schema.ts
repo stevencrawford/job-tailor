@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { JobLevel } from '../../interfaces/job.interface';
+import { JobLevel } from '@/app/services/interfaces/job.interface';
 
 export enum LLM_DECISION {
   UNKNOWN = 'UNKNOWN',

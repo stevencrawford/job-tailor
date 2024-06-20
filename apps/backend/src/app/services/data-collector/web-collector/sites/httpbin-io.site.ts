@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Page } from '@playwright/test';
-import { JobAttributes, JobAttributesOptional, JobAttributesRequired } from '../../../interfaces/job.interface';
+import { JobAttributes, JobAttributesOptional } from '@/app/services/interfaces/job.interface';
 import { WebCollectorConfig } from '../schema/web-config.schema';
 import { SiteProvider } from './site-provider.interface';
 

@@ -1,10 +1,10 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { IDataCollectorConfig, IDataCollectorService, IJobDispatcher } from '../data-collector.interface';
-import { JobAttributes, JobAttributesRequired } from '../../interfaces/job.interface';
+import { IDataCollectorConfig, IDataCollectorService, IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
+import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
 import { ProviderFactory } from './provider.factory';
 import { Logger } from '@nestjs/common';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
+import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 
 export abstract class BaseCollectorService<T> implements IDataCollectorService {
   readonly _logger = new Logger(this.constructor.name);

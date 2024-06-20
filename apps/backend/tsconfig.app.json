@@ -9,6 +9,9 @@
     "emitDecoratorMetadata": true,
     "target": "es2021",
 //    "strictNullChecks": true,
+    "paths": {
+      "@/*": ["apps/backend/src/*"],
+    }
   },
   "exclude": [
     "jest.config.ts",

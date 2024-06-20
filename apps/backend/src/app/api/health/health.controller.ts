@@ -1,5 +1,5 @@
 import { Controller, Get, Logger } from '@nestjs/common';
-import { DataCollectorService } from '../../services/data-collector/data-collector.service';
+import { DataCollectorService } from '@/app/services/data-collector/data-collector.service';
 
 @Controller('health')
 export class HealthController {

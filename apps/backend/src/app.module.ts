@@ -10,6 +10,7 @@ import { DataCollectorModule } from '@/app/services/data-collector/data-collecto
 import { BullModule } from '@nestjs/bullmq';
 import { JobCategorizeModule } from '@/app/services/job-categorize/job-categorize.module';
 import { JobSummarizeModule } from '@/app/services/job-summarize/job-summarize.module';
+import { CandidateModule } from '@/app/services/candidate/candidate.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JobSummarizeModule } from '@/app/services/job-summarize/job-summarize.m
     DataCollectorModule,
     JobCategorizeModule,
     JobSummarizeModule,
+    CandidateModule,
     ApiModule,
   ],
   controllers: [],

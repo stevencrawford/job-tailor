@@ -2,29 +2,22 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { JobsOptions, Queue } from 'bullmq';
 import { PrismaService } from '@/app/services/prisma/prisma.service';
-import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 import { DATA_COLLECTOR_FETCH } from '@/app/services/common/queue.constants';
 import ms from 'ms';
+import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
+import { IDataCollectorProcessRequest } from '@/app/services/interfaces/queue.interface';
 
 @Injectable()
 export class DataCollectorService {
   readonly _logger = new Logger(DataCollectorService.name);
 
   constructor(
-    @InjectQueue(DATA_COLLECTOR_FETCH) private readonly _dataCollectorQueue: Queue<IDataCollectorConfig>,
+    @InjectQueue(DATA_COLLECTOR_FETCH) private readonly _dataCollectorQueue: Queue<IDataCollectorProcessRequest>,
     private readonly _prismaService: PrismaService,
   ) {
   }
 
-  public async addJobToQueue({ data, name, opts }: {
-    data: IDataCollectorConfig;
-    name: string;
-    opts?: JobsOptions;
-  }) {
-    return this._dataCollectorQueue.add(name, data, opts);
-  }
-
-  public async addJobsToQueue(jobs: { data: IDataCollectorConfig; name: string; opts?: JobsOptions }[]) {
+  public async addJobsToQueue(jobs: { data: IDataCollectorProcessRequest; name: string; opts?: JobsOptions }[]) {
     return this._dataCollectorQueue.addBulk(jobs);
   }
 
@@ -41,9 +34,9 @@ export class DataCollectorService {
   async collectData(frequency: 'EVERY_DAY' | 'EVERY_6_HOURS') {
     const collectors = await this._prismaService.connector.findMany({
       where: {
+        frequency,
         status: 'ONLINE',
         healthy: true,
-        frequency,
         lastRun: {
           lte: new Date(Date.now() - ms('5m')),
         },
@@ -53,9 +46,11 @@ export class DataCollectorService {
     await this.addJobsToQueue(collectors.map((collector) => {
         return {
           data: {
-            ...collector,
-            lastRun: collector.lastRun?.getTime() ?? new Date().getTime(),
-          } as IDataCollectorConfig,
+            collectorConfig: {
+              ...collector,
+              lastRun: collector.lastRun?.getTime() ?? new Date().getTime(),
+            },
+          } as IDataCollectorProcessRequest,
           name: `refresh-${collector.name}`,
         };
       }),

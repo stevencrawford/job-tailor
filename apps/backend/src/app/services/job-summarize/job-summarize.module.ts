@@ -3,14 +3,14 @@ import { JobSummarizeService } from './job-summarize.service';
 import { LlmModule } from '../llm/llm.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { BullModule } from '@nestjs/bullmq';
-import { JOBS_SUMMARIZE } from '@/app/services/common/queue.constants';
+import { JOB_SUMMARIZE } from '@/app/services/common/queue.constants';
 import { defaultJobOptions } from '@/app/services/common/default-jobs-options';
 import { JobsSummarizeProcessor } from './job-summarize.processor';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: JOBS_SUMMARIZE,
+      name: JOB_SUMMARIZE,
       defaultJobOptions,
     }),
     PrismaModule,

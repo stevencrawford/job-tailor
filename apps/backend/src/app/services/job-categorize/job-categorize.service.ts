@@ -18,7 +18,7 @@ export class JobCategorizeService {
   ) {
     const categorizedJobs = await this._llmProviderFactory.get('groq').categorizeJobs(jobs);
 
-    await Promise.all(
+    return await Promise.all(
       categorizedJobs.results?.map(async (job: (JobWithId & CategorizedJob)) => {
         return this._prismaService.job.update({
           where: {
@@ -31,8 +31,6 @@ export class JobCategorizeService {
         });
       }),
     );
-
-    return categorizedJobs.results;
   }
 
 }

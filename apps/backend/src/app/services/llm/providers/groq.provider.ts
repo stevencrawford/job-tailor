@@ -122,7 +122,7 @@ ${jobs.map(j => `${j.id}:${j.title}`).join('\n')}}
         },
       ],
       n: 1,
-      temperature: 0.8,
+      temperature: 1.6,
       model: GROQ_MODEL_LLAMA3_70B,
       response_format: {
         type: 'json_object',

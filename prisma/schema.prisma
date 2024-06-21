@@ -29,9 +29,9 @@ model UserSearch {
   region String?
 
   category          String
-  categoryParent    String
-  jobCategory       JobCategory @relation(name: "UserSearchJobCategory", fields: [category], references: [name])
-  jobParentCategory JobCategory @relation(name: "UserSearchParentCategory", fields: [categoryParent], references: [name])
+  categoryParent    String?
+  jobCategory       JobCategory  @relation(name: "UserSearchJobCategory", fields: [category], references: [name])
+  jobParentCategory JobCategory? @relation(name: "UserSearchParentCategory", fields: [categoryParent], references: [name])
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])

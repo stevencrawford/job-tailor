@@ -1,13 +1,17 @@
 const enrichQueues = [
-  'jobs-enrich',
-  'jobs-summarize',
-  'jobs-categorize',
+  'job.enrich',
+  'job.summarize',
+  'job.categorize',
+  'candidate.lookup',
+  'candidate.match',
 ] as const;
 
 export const [
-  JOBS_ENRICH,
-  JOBS_SUMMARIZE,
-  JOBS_CATEGORIZE,
+  JOB_ENRICH,
+  JOB_SUMMARIZE,
+  JOB_CATEGORIZE,
+  CANDIDATE_LOOKUP,
+  CANDIDATE_MATCH,
 ] = enrichQueues;
 
 const dataCollectorQueues = [

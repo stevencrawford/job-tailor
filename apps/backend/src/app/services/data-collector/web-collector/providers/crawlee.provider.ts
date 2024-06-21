@@ -1,10 +1,10 @@
 import { defaultCrawlerOptions } from '../config/crawlee.defaults';
 import { PlaywrightCrawler, RobotsFile } from 'crawlee';
 import { Injectable, Logger } from '@nestjs/common';
-import { IDataCollectorConfig, IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
 import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
 import { IDataProvider } from '@/app/services/data-collector/data-provider.interface';
 import { SiteProviderFactory } from '../sites/site-provider.factory';
+import { IDataCollectorConfig, IJobDispatcher } from '@/app/services/data-collector/data-collector.interface';
 
 @Injectable()
 export class CrawleeProvider implements IDataProvider<PlaywrightCrawler> {

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PlaywrightCrawler, Source } from 'crawlee';
-import { IDataCollectorConfig } from '../data-collector.interface';
 import { UnknownCollectorError, WebCollectorError } from '../errors/data-collector.error';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
@@ -11,6 +10,7 @@ import { ProviderFactory } from '../common/provider.factory';
 import { CrawleeProvider } from './providers/crawlee.provider';
 import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
 import ms from 'ms';
+import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 
 @Injectable()
 export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler> {

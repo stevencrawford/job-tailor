@@ -4,6 +4,7 @@ import { JobsOptions, Queue } from 'bullmq';
 import { PrismaService } from '@/app/services/prisma/prisma.service';
 import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 import { DATA_COLLECTOR_FETCH } from '@/app/services/common/queue.constants';
+import ms from 'ms';
 
 @Injectable()
 export class DataCollectorService {
@@ -43,6 +44,9 @@ export class DataCollectorService {
         status: 'ONLINE',
         healthy: true,
         frequency,
+        lastRun: {
+          lte: new Date(Date.now() - ms('5m')),
+        },
       },
     });
     this._logger.log(`Found ${collectors.length} connectors`);

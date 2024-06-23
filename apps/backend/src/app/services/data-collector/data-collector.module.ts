@@ -13,7 +13,13 @@ import { ApiCollectorService } from './api-collector/api-collector.service';
 import { IDataCollectorService } from './data-collector.interface';
 import { DataCollectorFetchProcessor } from './processors/data-collector-fetch.processor';
 import { DataCollectorJobProcessor } from './processors/data-collector-job.processor';
-import { DATA_COLLECTOR_FETCH, DATA_COLLECTOR_JOB, JOB_ENRICHER_PRODUCER } from '@/app/services/common/queue.constants';
+import {
+  DATA_COLLECTOR_FETCH,
+  DATA_COLLECTOR_JOB,
+  JOB_ENRICHER_PRODUCER,
+} from '@/app/services/common/queue.constants';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 
 @Module({
   imports: [
@@ -25,6 +31,15 @@ import { DATA_COLLECTOR_FETCH, DATA_COLLECTOR_JOB, JOB_ENRICHER_PRODUCER } from 
       BullModule.registerQueue({
         name: queue,
         defaultJobOptions,
+      }),
+    ),
+    ...[
+      DATA_COLLECTOR_FETCH,
+      DATA_COLLECTOR_JOB,
+    ].map((queue) =>
+      BullBoardModule.forFeature({
+        name: queue,
+        adapter: BullMQAdapter, //or use BullAdapter if you're using bull instead of bullMQ
       }),
     ),
     BullModule.registerFlowProducer({

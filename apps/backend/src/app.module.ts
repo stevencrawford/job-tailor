@@ -11,6 +11,8 @@ import { BullModule } from '@nestjs/bullmq';
 import { JobCategorizeModule } from '@/app/services/job-categorize/job-categorize.module';
 import { JobSummarizeModule } from '@/app/services/job-summarize/job-summarize.module';
 import { CandidateModule } from '@/app/services/candidate/candidate.module';
+import { ExpressAdapter } from '@bull-board/express';
+import { BullBoardModule } from '@bull-board/nestjs';
 
 @Module({
   imports: [
@@ -32,6 +34,10 @@ import { CandidateModule } from '@/app/services/candidate/candidate.module';
           },
         };
       },
+    }),
+    BullBoardModule.forRoot({
+      route: '/queues',
+      adapter: ExpressAdapter // Or FastifyAdapter from `@bull-board/fastify`
     }),
     RedisModule.forRootAsync({
       inject: [ConfigService],

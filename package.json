@@ -23,6 +23,9 @@
     "node": ">=20.0.0 <21.0.0"
   },
   "dependencies": {
+    "@bull-board/api": "^5.20.2",
+    "@bull-board/express": "^5.20.2",
+    "@bull-board/nestjs": "^5.20.2",
     "@crawlee/browser-pool": "^3.10.1",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^10.1.1",

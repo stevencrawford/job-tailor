@@ -141,7 +141,14 @@ ${jobs.map(j => `${j.id}:${j.title}`).join('\n')}}
   }
 
   async summarizeJob(job: Pick<JobAttributes, 'description'>): Promise<SummarizedJob & { aiProvider: string }> {
-    const message = `Return a JSON { "responsibilities": string, "experienceRequirements": string, "technicalStack": string, "interviewProcess": string, "applicationProcess": string }
+    const message = `Respond with JSON 
+{
+  "responsibilities": string, 
+  "experienceRequirements": string, 
+  "technicalStack": string, 
+  "interviewProcess": string, 
+  "applicationProcess": string
+}
 Job Description:
 ---
 ${job.description}

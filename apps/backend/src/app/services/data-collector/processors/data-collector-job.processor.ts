@@ -63,6 +63,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
         if (!alreadySeen) {
           const updateNonNullData = () => ({
             ...Object.fromEntries(
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               Object.entries(jobListing).filter(([_, value]) => value !== null),
             ),
           });
@@ -97,7 +98,10 @@ export class DataCollectorJobProcessor extends WorkerHost {
     // Step 1, Categorize jobs
     const categorizeJobs: FlowJob = {
       name: `enrich-jobs:${collectorConfig.name}-categorize`,
-      data: { jobListings: jobsToEnrich },
+      data: {
+        jobListings: jobsToEnrich,
+        collectorConfig,
+      },
       queueName: JOB_CATEGORIZE,
       opts: {
         failParentOnFailure: true,
@@ -112,7 +116,10 @@ export class DataCollectorJobProcessor extends WorkerHost {
     // Step 2, Find candidates for jobs
     const findCandidates: FlowJob = {
       name: `enrich-jobs:${collectorConfig.name}-find-candidates`,
-      data: { jobListings: jobsToEnrich },
+      data: {
+        jobListings: jobsToEnrich,
+        collectorConfig,
+      },
       queueName: CANDIDATE_LOOKUP,
       children: [categorizeJobs],
       opts: {
@@ -128,7 +135,10 @@ export class DataCollectorJobProcessor extends WorkerHost {
     // Step 3, Summarize jobs
     const summarizeJobs: FlowJob = {
       name: `enrich-jobs:${collectorConfig.name}-summarize`,
-      data: { jobListings: jobsToEnrich },
+      data: {
+        jobListings: jobsToEnrich,
+        collectorConfig,
+      },
       queueName: JOB_SUMMARIZE,
       children: [findCandidates],
       opts: {

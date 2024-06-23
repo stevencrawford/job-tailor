@@ -10,6 +10,14 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   const port = configService.getOrThrow<number>('port');
+
+  // Register the BigInt prototype toJSON method to prevent the JSON.stringify()
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+  };
+
   await app.listen(port);
 }
 

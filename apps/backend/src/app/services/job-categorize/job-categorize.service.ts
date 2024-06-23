@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { LlmProviderFactory } from '@/app/services/llm/providers/llm-provider.factory';
 import { CategorizedJob } from '@/app/services/llm/providers/llm-provider.interface';
 import { PrismaService } from '@/app/services/prisma/prisma.service';
-import { JobAttributesRequired, JobWithId } from '@/app/services/interfaces/job.interface';
+import { JobAttributesRequired, JobLevel, jobLevelSchema, JobWithId } from '@/app/services/interfaces/job.interface';
 
 @Injectable()
 export class JobCategorizeService {
@@ -20,16 +20,17 @@ export class JobCategorizeService {
 
     return await Promise.all(
       categorizedJobs.results?.map(async (job: (JobWithId & CategorizedJob)) => {
+        const { id, category, level } = job;
         return this._prismaService.job.update({
           where: {
-            id: job.id,
+            id,
           },
           data: {
-            category: job.category,
-            level: job.level
+            category,
+            level: jobLevelSchema.catch(JobLevel.UNKNOWN).parse(level),
           },
         });
-      }),
+      }) ?? [],
     );
   }
 

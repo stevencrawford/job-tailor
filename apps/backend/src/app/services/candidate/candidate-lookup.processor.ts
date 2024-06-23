@@ -16,7 +16,8 @@ export class CandidateLookupProcessor extends WorkerHost {
   }
 
   async process(job: Job<IJobListingsEnrichRequest>) {
-    return await this._candidateService.findUsersWithMatchingJobCategories(job.data.jobListings);
+    const { jobListings } = job.data;
+    return await this._candidateService.findUsersWithMatchingJobCategories(jobListings);
   }
 
 }

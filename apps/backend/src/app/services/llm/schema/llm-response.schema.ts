@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { JobLevel } from '@/app/services/interfaces/job.interface';
 
 export enum LLM_DECISION {
   UNKNOWN = 'UNKNOWN',
@@ -23,15 +22,7 @@ export const classifyResponseSchema = z.object({
 export const categorizedJobSchema = z.object({
   id: z.string(),
   category: z.string(),
-  level: z.enum([
-    JobLevel.INTERN,
-    JobLevel.ENTRY,
-    JobLevel.MID_SENIOR,
-    JobLevel.STAFF,
-    JobLevel.DIRECTOR,
-    JobLevel.EXECUTIVE,
-    JobLevel.UNKNOWN
-  ]),
+  level: z.string(),
 });
 
 export const categorizeResponseSchema = z.object({

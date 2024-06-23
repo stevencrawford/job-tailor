@@ -1,3 +1,4 @@
+import { z } from 'zod';
 
 export interface JobAttributesRequired {
   url: string;
@@ -38,6 +39,16 @@ export enum JobLevel {
   EXECUTIVE = 'EXECUTIVE',
   UNKNOWN = 'UNKNOWN',
 }
+
+export const jobLevelSchema = z.enum([
+  JobLevel.INTERN,
+  JobLevel.ENTRY,
+  JobLevel.MID_SENIOR,
+  JobLevel.STAFF,
+  JobLevel.DIRECTOR,
+  JobLevel.EXECUTIVE,
+  JobLevel.UNKNOWN
+]);
 
 export enum JobCategory {
   // Engineering

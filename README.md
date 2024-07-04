@@ -1,13 +1,15 @@
 ## About
 
-Job Tailor is a web application that helps job seekers find and apply for relevant job opportunities. It uses advanced 
-algorithms to analyze job descriptions and match them with the user's skills and preferences.
+An open-source self-hosted solution designed to enhance the job search process for candidates by collecting,
+aggregating, and analyzing job listings from hundreds of job boards. Utilizing Large Language Models
+(LLMs), JobTailor structures job details, extracts key requirements, matches candidates, and tailors CVs to
+closely align with job specifications.
 
-## Key Features
+## Key Features (In-Progress)
 - Job Search: Search for jobs based on keywords, location, job type, and other filters.
 - Job Recommendations: Get personalized job recommendations based on your profile and preferences.
 - Job Tracking: Keep track of the jobs you've applied to and their status.
-- Resume Builder: Create and manage your professional resume.
+- CV Builder: Create and manage your professional CV.
 - Job Alerts: Receive notifications for new job postings that match your criteria.
 - Company Insights: Get detailed information about companies, including reviews and ratings.
 
@@ -23,7 +25,7 @@ algorithms to analyze job descriptions and match them with the user's skills and
 ## Requirements
 - [Node.js](https://nodejs.org/en/) >= 18.0.0
 - [pnpm](https://pnpm.io/) >= 8.6.12
-- Docker (for running PostgresDB and Redis)
+- Docker (for running PostgreSQL and Redis)
 
 ### Setup
 
@@ -50,7 +52,7 @@ Set up the database:
 pnpm run docker:up
 ```
 
-This will start PostgresDB and Redis containers.
+This will start PostgreSQL and Redis containers.
 
 Run database migrations:
 ```bash

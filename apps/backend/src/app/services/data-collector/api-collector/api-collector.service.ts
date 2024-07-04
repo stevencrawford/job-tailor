@@ -8,8 +8,8 @@ import { UnknownCollectorError, UnsupportedUrlError } from '@/app/services/data-
 import { AxiosApiCrawler } from './axios-api-crawler';
 import { ProviderFactory } from '../common/provider.factory';
 import { BaseCollectorService } from '../common/base-collector.service';
-import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 import ms from 'ms';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Injectable()
 export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
@@ -17,7 +17,7 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
 
   constructor(
     protected readonly  providerFactory: ProviderFactory<AxiosApiCrawler>,
-    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(QueueName.DataCollectorJob) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,

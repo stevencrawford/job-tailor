@@ -8,9 +8,9 @@ import { BaseCollectorService } from '../common/base-collector.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProviderFactory } from '../common/provider.factory';
 import { CrawleeProvider } from './providers/crawlee.provider';
-import { DATA_COLLECTOR_JOB } from '../../common/queue.constants';
 import ms from 'ms';
 import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Injectable()
 export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler> {
@@ -19,7 +19,7 @@ export class WebCollectorService extends BaseCollectorService<PlaywrightCrawler>
 
   constructor(
     protected readonly providerFactory: ProviderFactory<PlaywrightCrawler>,
-    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(QueueName.DataCollectorJob) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,

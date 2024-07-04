@@ -1,11 +1,11 @@
 import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 import { JobAttributes, JobAttributesRequired, JobWithId } from '@/app/services/interfaces/job.interface';
 
-export interface IDataCollectorProcessRequest {
+export interface IDataCollectorFetchQueueRequest {
   collectorConfig: IDataCollectorConfig
 }
 
-export interface IJobListingsEnrichRequest {
+export interface IJobListingsEnrichQueueRequest {
   collectorConfig: IDataCollectorConfig,
   jobListings: Array<JobWithId & (JobAttributesRequired | JobAttributes)>
 }

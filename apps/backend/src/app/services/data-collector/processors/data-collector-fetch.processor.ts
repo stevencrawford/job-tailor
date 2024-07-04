@@ -4,10 +4,10 @@ import { Job } from 'bullmq';
 import { UnknownCollectorError } from '../errors/data-collector.error';
 import { DataCollectorService } from '../data-collector.service';
 import { DataCollectorFactory } from '../data-collector.factory';
-import { DATA_COLLECTOR_FETCH } from '@/app/services/common/queue.constants';
-import { IDataCollectorProcessRequest } from '@/app/services/interfaces/queue.interface';
+import { IDataCollectorFetchQueueRequest } from '@/app/services/interfaces/queue.interface';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
-@Processor(DATA_COLLECTOR_FETCH, { concurrency: 5 })
+@Processor(QueueName.DataCollectorFetch, { concurrency: 5 })
 export class DataCollectorFetchProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorFetchProcessor.name);
 
@@ -18,7 +18,7 @@ export class DataCollectorFetchProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<IDataCollectorProcessRequest>) {
+  async process(job: Job<IDataCollectorFetchQueueRequest>) {
     this._logger.log(`Processing job ${job.id} with data ${JSON.stringify(job.data)}`);
     const { collectorConfig } = job.data;
 
@@ -30,7 +30,7 @@ export class DataCollectorFetchProcessor extends WorkerHost {
   }
 
   private async processJobWithErrorHandler(
-    job: Job<IDataCollectorProcessRequest>,
+    job: Job<IDataCollectorFetchQueueRequest>,
   ) {
     const { collectorConfig } = job.data;
     try {
@@ -50,7 +50,7 @@ export class DataCollectorFetchProcessor extends WorkerHost {
     }
   }
 
-  private async handleJob(job: Job<IDataCollectorProcessRequest>) {
+  private async handleJob(job: Job<IDataCollectorFetchQueueRequest>) {
     const { collectorConfig } = job.data;
     const dataCollector = this._collectorFactory.get(collectorConfig.type);
     if (dataCollector) {

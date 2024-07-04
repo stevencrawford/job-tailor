@@ -14,13 +14,13 @@ import { PlaywrightCrawler } from 'crawlee';
 import { IDataProvider } from '../data-provider.interface';
 import { SiteProviderFactory } from './sites/site-provider.factory';
 import { ProviderFactory } from '../common/provider.factory';
-import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Module({
   imports: [
     PrismaModule,
     BullModule.registerQueue({
-      name: DATA_COLLECTOR_JOB,
+      name: QueueName.DataCollectorJob,
       defaultJobOptions
     }),
   ],

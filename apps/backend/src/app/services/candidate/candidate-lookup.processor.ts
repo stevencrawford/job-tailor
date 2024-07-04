@@ -1,11 +1,11 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { CANDIDATE_LOOKUP } from '../common/queue.constants';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { CandidateService } from '@/app/services/candidate/candidate.service';
-import { IJobListingsEnrichRequest } from '@/app/services/interfaces/queue.interface';
+import { IJobListingsEnrichQueueRequest } from '@/app/services/interfaces/queue.interface';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
-@Processor(CANDIDATE_LOOKUP)
+@Processor(QueueName.CandidateLookup)
 export class CandidateLookupProcessor extends WorkerHost {
   readonly _logger = new Logger(CandidateLookupProcessor.name);
 
@@ -15,9 +15,11 @@ export class CandidateLookupProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<IJobListingsEnrichRequest>) {
-    const { jobListings } = job.data;
-    return await this._candidateService.findUsersWithMatchingJobCategories(jobListings);
+  async process(job: Job<IJobListingsEnrichQueueRequest>) {
+    const { jobListings, collectorConfig } = job.data;
+    const candidates = await this._candidateService.findUsersWithMatchingJobCategories(jobListings);
+    this._logger.debug(`Found ${candidates.length} candidates for ${collectorConfig.name}`);
+    return candidates;
   }
 
 }

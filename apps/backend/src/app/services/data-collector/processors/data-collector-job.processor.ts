@@ -4,18 +4,12 @@ import { FlowJob, FlowProducer, Job } from 'bullmq';
 import { PrismaService } from '@/app/services/prisma/prisma.service';
 import { InjectRedis } from '@songkeys/nestjs-redis';
 import Redis from 'ioredis';
-import {
-  CANDIDATE_LOOKUP,
-  DATA_COLLECTOR_JOB,
-  JOB_CATEGORIZE,
-  JOB_ENRICH,
-  JOB_ENRICHER_PRODUCER,
-  JOB_SUMMARIZE,
-} from '@/app/services/common/queue.constants';
+import { JOB_ENRICHER_PRODUCER } from '@/app/services/common/flow-producer.constants';
 import { IDataCollectorConfig } from '@/app/services/data-collector/data-collector.interface';
 import { JobAttributes, JobAttributesRequired } from '@/app/services/interfaces/job.interface';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
-@Processor(DATA_COLLECTOR_JOB, { concurrency: 10 })
+@Processor(QueueName.DataCollectorJob, { concurrency: 10 })
 export class DataCollectorJobProcessor extends WorkerHost {
   readonly _logger = new Logger(DataCollectorJobProcessor.name);
 
@@ -102,7 +96,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
         jobListings: jobsToEnrich,
         collectorConfig,
       },
-      queueName: JOB_CATEGORIZE,
+      queueName: QueueName.JobCategorize,
       opts: {
         failParentOnFailure: true,
         attempts: 3,
@@ -120,7 +114,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
         jobListings: jobsToEnrich,
         collectorConfig,
       },
-      queueName: CANDIDATE_LOOKUP,
+      queueName: QueueName.CandidateLookup,
       children: [categorizeJobs],
       opts: {
         failParentOnFailure: true,
@@ -139,7 +133,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
         jobListings: jobsToEnrich,
         collectorConfig,
       },
-      queueName: JOB_SUMMARIZE,
+      queueName: QueueName.JobSummarize,
       children: [findCandidates],
       opts: {
         failParentOnFailure: true,
@@ -154,7 +148,7 @@ export class DataCollectorJobProcessor extends WorkerHost {
     // Bring it all together
     const enrichJob: FlowJob = {
       name: `enrich-jobs:${collectorConfig.name}`,
-      queueName: JOB_ENRICH,
+      queueName: QueueName.JobEnrich,
       children: [summarizeJobs],
       opts: {
         failParentOnFailure: true,

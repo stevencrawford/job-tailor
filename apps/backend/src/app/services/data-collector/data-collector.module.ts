@@ -13,35 +13,25 @@ import { ApiCollectorService } from './api-collector/api-collector.service';
 import { IDataCollectorService } from './data-collector.interface';
 import { DataCollectorFetchProcessor } from './processors/data-collector-fetch.processor';
 import { DataCollectorJobProcessor } from './processors/data-collector-job.processor';
-import {
-  DATA_COLLECTOR_FETCH,
-  DATA_COLLECTOR_JOB,
-  JOB_ENRICHER_PRODUCER,
-} from '@/app/services/common/queue.constants';
+import { JOB_ENRICHER_PRODUCER } from '@/app/services/common/flow-producer.constants';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { QueueName } from '../common/queue-name.enum';
 
 @Module({
   imports: [
     PrismaModule,
-    ...[
-      DATA_COLLECTOR_FETCH,
-      DATA_COLLECTOR_JOB,
-    ].map((queue) =>
-      BullModule.registerQueue({
-        name: queue,
-        defaultJobOptions,
-      }),
-    ),
-    ...[
-      DATA_COLLECTOR_FETCH,
-      DATA_COLLECTOR_JOB,
-    ].map((queue) =>
-      BullBoardModule.forFeature({
-        name: queue,
-        adapter: BullMQAdapter, //or use BullAdapter if you're using bull instead of bullMQ
-      }),
-    ),
+    ...Object.values(QueueName)
+      .flatMap((queue) => [
+        BullModule.registerQueue({
+          name: queue,
+          defaultJobOptions,
+        }),
+        BullBoardModule.forFeature({
+          name: queue,
+          adapter: BullMQAdapter,
+        }),
+      ]),
     BullModule.registerFlowProducer({
       name: JOB_ENRICHER_PRODUCER,
     }),

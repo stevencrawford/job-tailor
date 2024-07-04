@@ -1,13 +1,13 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { JOB_CATEGORIZE } from '@/app/services/common/queue.constants';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { JobCategorizeService } from './job-categorize.service';
 import Bottleneck from 'bottleneck';
-import { IJobListingsEnrichRequest } from '@/app/services/interfaces/queue.interface';
+import { IJobListingsEnrichQueueRequest } from '@/app/services/interfaces/queue.interface';
 import { chunkArray } from '@/app/utils/core.utils';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
-@Processor(JOB_CATEGORIZE)
+@Processor(QueueName.JobCategorize)
 export class JobCategorizeProcessor extends WorkerHost {
   readonly _logger = new Logger(JobCategorizeProcessor.name);
 
@@ -17,7 +17,7 @@ export class JobCategorizeProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<IJobListingsEnrichRequest>) {
+  async process(job: Job<IJobListingsEnrichQueueRequest>) {
     const { jobListings } = job.data;
     const limiter = new Bottleneck({
       maxConcurrent: 2,

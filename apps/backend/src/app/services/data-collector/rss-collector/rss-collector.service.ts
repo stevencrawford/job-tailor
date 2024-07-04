@@ -8,8 +8,8 @@ import { UnknownCollectorError, UnsupportedUrlError } from '@/app/services/data-
 import { ProviderFactory } from '@/app/services/data-collector/common/provider.factory';
 import { RssParserCrawler } from './rss-parser-crawler';
 import { BaseCollectorService } from '@/app/services/data-collector/common/base-collector.service';
-import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
 import ms from 'ms';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Injectable()
 export class RssCollectorService extends BaseCollectorService<RssParserCrawler> {
@@ -17,7 +17,7 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
 
   constructor(
     protected readonly providerFactory: ProviderFactory<RssParserCrawler>,
-    @InjectQueue(DATA_COLLECTOR_JOB) protected readonly dataCollectorJobQueue: Queue<{
+    @InjectQueue(QueueName.DataCollectorJob) protected readonly dataCollectorJobQueue: Queue<{
       collectorConfig: IDataCollectorConfig,
       jobListings: Array<JobAttributesRequired | JobAttributes>
     }>,

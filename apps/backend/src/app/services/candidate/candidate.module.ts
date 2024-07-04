@@ -4,18 +4,18 @@ import { defaultJobOptions } from '@/app/services/common/default-jobs-options';
 import { PrismaModule } from '@/app/services/prisma/prisma.module';
 import { CandidateLookupProcessor } from '@/app/services/candidate/candidate-lookup.processor';
 import { CandidateService } from '@/app/services/candidate/candidate.service';
-import { CANDIDATE_LOOKUP } from '@/app/services/common/queue.constants';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: CANDIDATE_LOOKUP,
+      name: QueueName.CandidateLookup,
       defaultJobOptions,
     }),
     BullBoardModule.forFeature({
-      name: CANDIDATE_LOOKUP,
+      name: QueueName.CandidateLookup,
       adapter: BullMQAdapter, //or use BullAdapter if you're using bull instead of bullMQ
     }),
     PrismaModule,

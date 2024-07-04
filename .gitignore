@@ -45,7 +45,7 @@ Thumbs.db
 docker/*/.database
 
 # Environment variables
-.env
+.env*
 
 # Next.js
 .next

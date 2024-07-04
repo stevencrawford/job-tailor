@@ -15,7 +15,7 @@ export class CandidateService {
   ): Promise<Array<JobWithId & JobAttributes & {
     candidates: number
   }>> {
-    const results = await this._prismaService.$queryRaw<Array<JobWithId & JobAttributes & { candidates: number }>>`
+    return await this._prismaService.$queryRaw<Array<JobWithId & JobAttributes & { candidates: number }>>`
         SELECT j.id,
                j.title,
                j.url,
@@ -37,7 +37,5 @@ export class CandidateService {
         HAVING COUNT(DISTINCT us."userId") > 0
         ORDER BY candidates DESC;
     `;
-    this._logger.log(`[findUsersWithMatchingJobCategories]: ${JSON.stringify(results)}`);
-    return results;
   }
 }

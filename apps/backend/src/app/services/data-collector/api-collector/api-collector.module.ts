@@ -7,12 +7,12 @@ import { RemoteOkApiProvider } from './providers/remoteok.provider';
 import { IDataProvider } from '../data-provider.interface';
 import { AxiosApiCrawler } from './axios-api-crawler';
 import { ProviderFactory } from '@/app/services/data-collector/common/provider.factory';
-import { DATA_COLLECTOR_JOB } from '@/app/services/common/queue.constants';
+import { QueueName } from '@/app/services/common/queue-name.enum';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: DATA_COLLECTOR_JOB,
+      name: QueueName.DataCollectorJob,
       defaultJobOptions
     }),
   ],

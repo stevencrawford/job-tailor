@@ -39,7 +39,7 @@ export class RssCollectorService extends BaseCollectorService<RssParserCrawler> 
       await rssCrawler.run(
         config.url,
         {
-          lastRun: collectorConfig.lastRun > 0 ? collectorConfig.lastRun : new Date(ms('48 hours')).getTime(),
+          lastRun: collectorConfig.lastRun > 0 ? collectorConfig.lastRun : new Date(Date.now() - ms('48 hours')).getTime(),
         });
     } else {
       throw new UnsupportedUrlError(`"${config.url}" not supported by ${rssProvider._identifier}`);

@@ -37,9 +37,16 @@ export class DataCollectorService {
         frequency,
         status: 'ONLINE',
         healthy: true,
-        lastRun: {
-          lte: new Date(Date.now() - ms('5m')),
-        },
+        OR: [
+          {
+            lastRun: {
+              lte: new Date(Date.now() - ms('5m')),
+            },
+          },
+          {
+            lastRun: null,
+          },
+        ],
       },
     });
     this._logger.log(`Found ${collectors.length} connectors`);
@@ -48,7 +55,7 @@ export class DataCollectorService {
           data: {
             collectorConfig: {
               ...collector,
-              lastRun: collector.lastRun?.getTime() ?? new Date().getTime(),
+              lastRun: collector.lastRun?.getTime() ?? new Date(Date.now() - ms('48 hours')),
             },
           } as IDataCollectorFetchQueueRequest,
           name: `refresh-${collector.name}`,

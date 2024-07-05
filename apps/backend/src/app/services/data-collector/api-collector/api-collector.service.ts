@@ -36,7 +36,7 @@ export class ApiCollectorService extends BaseCollectorService<AxiosApiCrawler> {
     if (apiProvider.hasSupport(config.url)) {
       const apiCrawler = apiProvider.initialize(this._bullQueueDispatcher);
       await apiCrawler.run([config.url], {
-        lastRun: collectorConfig.lastRun > 0 ? collectorConfig.lastRun : new Date(ms('48 hours')).getTime(),
+        lastRun: collectorConfig.lastRun > 0 ? collectorConfig.lastRun : new Date(Date.now() - ms('48 hours')).getTime(),
       });
     } else {
       throw new UnsupportedUrlError(`"${config.url}" not supported by ${apiProvider._identifier}`);
